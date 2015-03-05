@@ -10,6 +10,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
     [RequireComponent(typeof (AudioSource))]
     public class FirstPersonController : MonoBehaviour
     {
+		[SerializeField] private bool ControllerUse;
+		[SerializeField] public static bool UsingController;
         [SerializeField] private bool m_IsWalking;
         [SerializeField] private float m_WalkSpeed;
         [SerializeField] private float m_RunSpeed;
@@ -55,6 +57,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_Jumping = false;
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
+
+			UsingController = ControllerUse;
+
+
+			Cursor.visible = false;
         }
 
 
@@ -62,14 +69,23 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private void Update()
         {
 
-			Cursor.lockState = CursorLockMode.Locked;
-			Cursor.visible = false;
+
 
             RotateView();
             // the jump state needs to read here to make sure it is not missed
             if (!m_Jump)
             {
-                m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
+				if(!UsingController)
+				{
+					m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
+				}
+
+				if(UsingController)
+				{
+					m_Jump = Input.GetButtonDown("A_1");
+				}
+
+                
             }
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
@@ -206,16 +222,41 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private void GetInput(out float speed)
         {
             // Read input
-            float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-            float vertical = CrossPlatformInputManager.GetAxis("Vertical");
+			float horizontal = 0;
+			float vertical = 0;
 
-            bool waswalking = m_IsWalking;
+			bool waswalking = false;
+			if(!UsingController)
+			{ 
+				horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
+				vertical = CrossPlatformInputManager.GetAxis("Vertical");
+				
+				waswalking = m_IsWalking;
+				
+				#if !MOBILE_INPUT
+				// On standalone builds, walk/run speed is modified by a key press.
+				// keep track of whether or not the character is walking or running
+				m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
+				
+				#endif
+			}
+			if(UsingController)
+			{ 
+				horizontal = Input.GetAxis("L_XAxis_1");
+				vertical = -Input.GetAxis("L_YAxis_1");
+				
+				waswalking = m_IsWalking;
+				
+				#if !MOBILE_INPUT
+				// On standalone builds, walk/run speed is modified by a key press.
+				// keep track of whether or not the character is walking or running
 
-#if !MOBILE_INPUT
-            // On standalone builds, walk/run speed is modified by a key press.
-            // keep track of whether or not the character is walking or running
-            m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
-#endif
+
+				m_IsWalking = !Input.GetButton("LS_1");
+				
+				#endif
+			}
+          
             // set the desired speed to be walking or running
             speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
             m_Input = new Vector2(horizontal, vertical);
