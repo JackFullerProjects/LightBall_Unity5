@@ -42,7 +42,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 				yRot = Input.GetAxis("R_XAxis_1") * XSensitivity;
 				xRot = -Input.GetAxis("R_YAxis_1") * YSensitivity;
 
-				Debug.Log ("Hit");
+
 			}
 
 
