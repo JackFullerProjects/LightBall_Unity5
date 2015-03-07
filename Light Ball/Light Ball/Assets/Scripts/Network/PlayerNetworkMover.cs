@@ -5,8 +5,9 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 
 	private Vector3 correctPlayerPos;
 	private Quaternion correctPlayerRot;
-	private float smoothing = 10f;
+	private float smoothing = 5f;
 	bool initialLoad = true;
+
 
 
 	// Use this for initialization
@@ -32,23 +33,37 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 					}
 				}
 			}
-
+		}
+		else 
+		{
+			StartCoroutine("UpdateData");
 		}
 	}
+	
 
-	// Update is called once per frame
-	void Update () {
-
-		if (photonView.isMine) {
-			//Do nothing
+	IEnumerator UpdateData()
+	{
+		if(initialLoad)
+		{
+			initialLoad = false;
+			transform.position = correctPlayerPos;
+			transform.rotation = correctPlayerRot;
 		}
-		else {
-			transform.position = Vector3.Lerp(transform.position, correctPlayerPos, Time.deltaTime * smoothing);
-			transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * smoothing);
+		while(true)
+		{
+			//only lerp position if it is needed
+			//UNUSED IN THIS VERSION
+			//if(Mathf.Abs((transform.position - correctPlayerPos).magnitude) > 0.001)
+			//{
+			//}
+			//===========================================================================
+
+			this.transform.position = Vector3.Lerp(transform.position, correctPlayerPos, Time.deltaTime * smoothing);
+			this.transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * smoothing);
+
+			yield return null;
 		}
 	}
-
-
 
 	
 	void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -57,8 +72,8 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 		if (stream.isWriting)
 		{
 			Debug.Log("writing");
-			stream.SendNext(transform.position);
-			stream.SendNext(transform.rotation);
+			stream.SendNext(this.transform.position);
+			stream.SendNext(this.transform.rotation);
 			
 		}
 		else

@@ -8,6 +8,12 @@ public class NetworkManager : MonoBehaviour {
 	[SerializeField] Transform[] spawnPoints;
 	[SerializeField] Camera lobbyCamera;
 
+	[SerializeField] GameObject serverWindow;
+	[SerializeField] InputField username;
+	[SerializeField] InputField roomName;
+	[SerializeField] InputField roomList;
+
+
 	public string VERSION = "v0.0.1";
 
 	private GameObject player;
@@ -17,24 +23,49 @@ public class NetworkManager : MonoBehaviour {
 
 		PhotonNetwork.logLevel = PhotonLogLevel.Full;
 		PhotonNetwork.ConnectUsingSettings(VERSION);
+		StartCoroutine("UpdateConnectionString");
 	
 	}
-	
-	// Update is called once per frame
-	void Update () 
+
+	public void JoinRoom()
 	{
-		connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
+		PhotonNetwork.player.name = username.text;
+		RoomOptions roomOption = new RoomOptions(){ isVisible = true, maxPlayers = 4 };
+		PhotonNetwork.JoinOrCreateRoom(roomName.text, roomOption, TypedLobby.Default);
+	}
+
+	// Update is called once per frame
+	IEnumerator UpdateConnectionString () 
+	{
+		while(true)
+		{
+			connectionText.text = PhotonNetwork.connectionStateDetailed.ToString();
+			yield return null;
+		}
 	
 	}
 
 	void OnJoinedLobby()
 	{
-		RoomOptions roomOption = new RoomOptions(){ isVisible = true, maxPlayers = 4 };
-		PhotonNetwork.JoinOrCreateRoom("JackLovesTheD", roomOption, TypedLobby.Default);
+		serverWindow.SetActive(true);
+	}
+
+	void OnReceivedRoomListUpdate()
+	{
+		RoomInfo[] rooms = PhotonNetwork.GetRoomList();
+		Debug.Log(rooms.Length);
+
+		foreach(RoomInfo room in rooms)
+		{
+			roomList.text += room.name + "\n";
+		}
 	}
 
 	void OnJoinedRoom()
 	{
+		StopCoroutine("UpdateConnectionString");
+		connectionText.text = "";
+		serverWindow.SetActive(false);
 		StartSpawnProcess(1f);
 	}
 
@@ -43,6 +74,8 @@ public class NetworkManager : MonoBehaviour {
 		lobbyCamera.enabled = true;
 		StartCoroutine("SpawnPlayer", _respawnTime);
 	}
+
+
 
 
 	IEnumerator SpawnPlayer(float _respawnTime)
