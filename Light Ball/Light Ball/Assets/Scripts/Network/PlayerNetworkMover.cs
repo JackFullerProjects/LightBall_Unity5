@@ -3,15 +3,16 @@ using System.Collections;
 
 public class PlayerNetworkMover : Photon.MonoBehaviour {
 
-	Vector3 position;
-	Quaternion rotation;
-	float smoothing = 10f;
-	float health = 100f;
+	private Vector3 correctPlayerPos;
+	private Quaternion correctPlayerRot;
+	private float smoothing = 2f;
+	bool initialLoad = true;
 
 
 	// Use this for initialization
 	void Start ()
 	{
+		PhotonNetwork.logLevel = PhotonLogLevel.Full;
 		if(photonView.isMine)
 		{
 			GetComponent<FirstPersonController>().enabled = true;
@@ -31,35 +32,42 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 					}
 				}
 			}
-		}
-		else
-		{
-			StartCoroutine("UpdateData");
+
 		}
 	}
 
-	IEnumerator UpdateData()
-	{
-		while(true)
-		{
-			transform.position = Vector3.Lerp(transform.position, position, Time.deltaTime * smoothing);
-			transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * smoothing);
-			yield return null;
+	// Update is called once per frame
+	void Update () {
+
+		if (photonView.isMine) {
+			//Do nothing
+		}
+		else {
+			transform.position = Vector3.Lerp(transform.position, correctPlayerPos, 0.1f);
+			transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, 0.1f);
 		}
 	}
 
-	void OnPhotonSerializeView(PhotonStream _stream, PhotonMessageInfo _info)
+
+
+	
+	void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
-		if(_stream.isWriting)
+		Debug.Log("calling");
+		if (stream.isWriting)
 		{
-			_stream.SendNext(transform.position);
-			_stream.SendNext(transform.rotation);
+			Debug.Log("writing");
+			stream.SendNext(transform.position);
+			stream.SendNext(transform.rotation);
+			
 		}
 		else
 		{
-			position = (Vector3)_stream.ReceiveNext();
-			rotation = (Quaternion)_stream.ReceiveNext();
+			Debug.Log("reading");
+			this.correctPlayerPos = (Vector3)stream.ReceiveNext();
+			this.correctPlayerRot = (Quaternion)stream.ReceiveNext();
 		}
 	}
+
 }
 
