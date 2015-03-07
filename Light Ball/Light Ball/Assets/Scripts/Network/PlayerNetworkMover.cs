@@ -6,6 +6,7 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 	Vector3 position;
 	Quaternion rotation;
 	float smoothing = 10f;
+	float health = 100f;
 
 
 	// Use this for initialization
@@ -47,7 +48,7 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 		}
 	}
 
-	void OnPhotonSerializaView(PhotonStream _stream, PhotonMessageInfo _info)
+	void OnPhotonSerializeView(PhotonStream _stream, PhotonMessageInfo _info)
 	{
 		if(_stream.isWriting)
 		{
