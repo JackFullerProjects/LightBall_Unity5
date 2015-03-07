@@ -24,7 +24,7 @@ public class NetworkManager : MonoBehaviour {
 		PhotonNetwork.logLevel = PhotonLogLevel.Full;
 		PhotonNetwork.ConnectUsingSettings(VERSION);
 		StartCoroutine("UpdateConnectionString");
-	
+
 	}
 
 	public void JoinRoom()
