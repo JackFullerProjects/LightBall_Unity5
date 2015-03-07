@@ -5,7 +5,7 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 
 	private Vector3 correctPlayerPos;
 	private Quaternion correctPlayerRot;
-	private float smoothing = 2f;
+	private float smoothing = 10f;
 	bool initialLoad = true;
 
 
@@ -43,8 +43,8 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 			//Do nothing
 		}
 		else {
-			transform.position = Vector3.Lerp(transform.position, correctPlayerPos, 0.1f);
-			transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, 0.1f);
+			transform.position = Vector3.Lerp(transform.position, correctPlayerPos, Time.deltaTime * smoothing);
+			transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * smoothing);
 		}
 	}
 
