@@ -4,16 +4,32 @@ using System.Collections;
 public class PlayerNetworkMover : Photon.MonoBehaviour {
 
 	private Vector3 correctPlayerPos;
+	private Vector3 latestCorrectPos = Vector3.zero;
 	private Quaternion correctPlayerRot;
-	private float smoothing = 5f;
+	private Vector3 velocity;
+	private float smoothing = 8f;
 	bool initialLoad = true;
+	
 
-
+	private float lastSynchronizationTime = 0f;
+	private float syncDelay = 0f;
+	private float syncTime = 0f;
+	private Vector3 syncStartPosition = Vector3.zero;
+	private Vector3 syncEndPosition = Vector3.zero;
 
 	// Use this for initialization
 	void Start ()
 	{
+		if(PhotonNetwork.connected)
+		{
+			PhotonNetwork.sendRateOnSerialize = 20;
+			PhotonNetwork.sendRate = 20;
+			PhotonNetwork.isMessageQueueRunning = true;
+		}
+
 		PhotonNetwork.logLevel = PhotonLogLevel.Full;
+
+
 		if(photonView.isMine)
 		{
 			GetComponent<FirstPersonController>().enabled = true;
@@ -34,55 +50,162 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 				}
 			}
 		}
-		else 
+		else
 		{
-			StartCoroutine("UpdateData");
+			latestCorrectPos = transform.position;
 		}
 	}
-	
 
-	IEnumerator UpdateData()
+	void Update()
 	{
+		UpdateData();
+	}
+	
+	private void UpdateData()
+	{
+		if(photonView.isMine)
+			return;
+		
 		if(initialLoad)
 		{
 			initialLoad = false;
 			transform.position = correctPlayerPos;
 			transform.rotation = correctPlayerRot;
 		}
-		while(true)
-		{
-			//only lerp position if it is needed
-			//UNUSED IN THIS VERSION
-			//if(Mathf.Abs((transform.position - correctPlayerPos).magnitude) > 0.001)
-			//{
-			//}
-			//===========================================================================
-
-			this.transform.position = Vector3.Lerp(transform.position, correctPlayerPos, Time.deltaTime * smoothing);
-			this.transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * smoothing);
-
-			yield return null;
-		}
+		
+		this.transform.position = Vector3.Lerp(transform.position, correctPlayerPos, 0.1f) + velocity * Time.deltaTime; //for advance + rigibody.velocity * time.deltaTime
+		this.transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, 0.1f);
 	}
-
+	
+	
+	
 	
 	void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
-		Debug.Log("calling");
 		if (stream.isWriting)
 		{
-			Debug.Log("writing");
 			stream.SendNext(this.transform.position);
 			stream.SendNext(this.transform.rotation);
+			stream.SendNext(GetComponent<Rigidbody>().velocity);
 			
 		}
 		else
 		{
-			Debug.Log("reading");
 			this.correctPlayerPos = (Vector3)stream.ReceiveNext();
 			this.correctPlayerRot = (Quaternion)stream.ReceiveNext();
+			this.velocity = (Vector3)stream.ReceiveNext();
 		}
 	}
-
 }
+
+
+
+
+//OLD IENUMATOR 
+//	IEnumerator UpdateData()
+//	{
+//
+//		while(true)
+//		{
+//			//only lerp position if it is needed
+//			//UNUSED IN THIS VERSION
+//			//if(Mathf.Abs((transform.position - correctPlayerPos).magnitude) > 0.001)
+//			//{
+//			//}
+//			//===========================================================================
+//
+//
+//			yield return null;
+//		}
+//	}
+
+
+
+
+
+
+
+
+
+
+//	void Update()
+//	{
+//		if(!photonView.isMine)
+//		{
+//			SmoothMovement();
+//		}
+//	}
+//
+//	void SmoothMovement()
+//	{
+//		transform.localPosition =
+//			Vector3.Lerp (transform.localPosition,
+//			              latestCorrectPos, (float)(timestamp-prevtime));
+//	}
+//	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+//	{
+//		// Always send transform (depending on reliability of the network view)
+//		if (stream.isWriting)
+//		{
+//			Vector3 pos = transform.localPosition;
+//			stream.Serialize(ref pos);
+//		}
+//		// When receiving, buffer the information
+//		else
+//		{
+//			// Receive latest state information
+//			Vector3 pos = Vector3.zero;
+//			stream.Serialize(ref pos);
+//			
+//			correctPlayerPos = latestCorrectPos;
+//			latestCorrectPos = pos;
+//			
+//			prevtime = timestamp;
+//			timestamp = info.timestamp;
+//		}
+//	}
+
+
+
+//SMOOTHING V1
+
+
+
+
+//	void Update()
+//	{
+//		if(photonView.isMine)
+//			return;
+//
+//		SyncedMovement();
+//	}
+//
+//
+//	private void SyncedMovement()
+//	{
+//		syncTime += Time.deltaTime;
+//		GetComponent<Rigidbody>().position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
+//	}
+//
+//
+//	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
+//	{
+//		Vector3 syncPosition = Vector3.zero;
+//		if (stream.isWriting)
+//		{
+//			syncPosition = GetComponent<Rigidbody>().position;
+//			stream.Serialize(ref syncPosition);
+//		}
+//		else
+//		{
+//			stream.Serialize(ref syncPosition);
+//			
+//			syncTime = 0f;
+//			syncDelay = Time.time - lastSynchronizationTime;
+//			lastSynchronizationTime = Time.time;
+//			
+//			syncStartPosition = GetComponent<Rigidbody>().position;
+//			syncEndPosition = syncPosition;
+//		}
+//	}
 

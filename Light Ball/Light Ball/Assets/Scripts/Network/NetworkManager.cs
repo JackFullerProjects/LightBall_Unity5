@@ -18,8 +18,14 @@ public class NetworkManager : MonoBehaviour {
 
 	private GameObject player;
 
+	void Awake()
+	{
+		Application.targetFrameRate = 60;
+	}
+
 	// Use this for initialization
-	void Start () {
+	void Start () 
+	{
 
 		PhotonNetwork.logLevel = PhotonLogLevel.Full;
 		PhotonNetwork.ConnectUsingSettings(VERSION);

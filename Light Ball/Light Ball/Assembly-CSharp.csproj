@@ -106,9 +106,12 @@
      <Compile Include="Assets\Photon Unity Networking\UtilityScripts\TimeKeeper.cs" />
      <Compile Include="Assets\Scripts\Network\NetworkManager.cs" />
      <Compile Include="Assets\Scripts\Network\PlayerNetworkMover.cs" />
+     <Compile Include="Assets\Scripts\Network\SyncPlayer.cs" />
      <Compile Include="Assets\Scripts\PC\FirstPersonController.cs" />
      <Compile Include="Assets\Scripts\PC\HeadBob.cs" />
      <Compile Include="Assets\Scripts\PC\MouseLook.cs" />
+     <Compile Include="Assets\Scripts\PC\Player.cs" />
+     <Compile Include="Assets\Scripts\PC\PlayerClass.cs" />
      <Compile Include="Assets\Scripts\PC\RigidbodyFirstPersonController.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
