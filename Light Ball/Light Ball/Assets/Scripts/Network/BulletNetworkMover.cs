@@ -3,19 +3,74 @@ using System.Collections;
 
 public class BulletNetworkMover : MonoBehaviour {
 
-    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    private float lastSynchronizationTime = 0f;
+    private float syncDelay = 0f;
+    private float syncTime = 0f;
+    private Vector3 syncStartPosition = Vector3.zero;
+    private Vector3 syncEndPosition = Vector3.zero;
+    private Quaternion syncRotation = Quaternion.identity;
+    private Rigidbody playerRigidbody;
+
+
+
+    private Vector3 latestCorrectPos;
+    private Vector3 onUpdatePos;
+    private float fraction;
+    private PhotonView pv;
+
+    public float FireForce;
+
+    public void Awake()
+    {
+        PhotonNetwork.sendRate = 15;
+        PhotonNetwork.sendRateOnSerialize = 15;
+
+    }
+
+    void Start()
+    {
+        GetComponent<Rigidbody>().AddForce(Camera.main.transform.forward * FireForce, ForceMode.Force);
+        pv = GetComponent<PhotonView>();
+        latestCorrectPos = transform.position;
+        onUpdatePos = transform.position;
+    }
+
+    public void LateUpdate()
+    {
+        if (!pv.isMine)
+        {
+            fraction = fraction + Time.deltaTime * 19;
+            transform.localPosition = Vector3.Lerp(onUpdatePos, latestCorrectPos, fraction);    // set our pos between A and B
+        }
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.isWriting)
         {
-            //We own this player: send the others our data
-            stream.SendNext(transform.position);
-            stream.SendNext(transform.rotation);
+            Vector3 pos = transform.localPosition;
+            Quaternion rot = transform.localRotation;
+            stream.Serialize(ref pos);
+            stream.Serialize(ref rot);
         }
         else
         {
-            //Network player, receive data
-           // correctPlayerPos = (Vector3)stream.ReceiveNext();
-           // correctPlayerRot = (Quaternion)stream.ReceiveNext();
+            pv = GetComponent<PhotonView>();
+            if (!pv.isMine)
+            {
+                // Receive latest state information
+                Vector3 pos = Vector3.zero;
+                Quaternion rot = Quaternion.identity;
+
+                stream.Serialize(ref pos);
+                stream.Serialize(ref rot);
+
+                latestCorrectPos = pos;                 // save this to move towards it in FixedUpdate()
+                onUpdatePos = transform.localPosition;  // we interpolate from here to latestCorrectPos
+                fraction = 0;                           // reset the fraction we alreay moved. see Update()
+
+                transform.localRotation = rot;          // this sample doesn't smooth rotation
+            }
         }
     }
 }

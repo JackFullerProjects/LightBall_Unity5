@@ -212,40 +212,45 @@ public class Player : PlayerClass {
         _bullet.transform.rotation = Camera.main.transform.rotation;
         Rigidbody ballRigidbody = _bullet.GetComponent<Rigidbody>();
 
-        //network inst
-        PhotonNetwork.Instantiate("whiteBall", bulletPos,
-                                                     _bullet.transform.rotation,
-                                                     0);
 
         if (_bullet.name == "whiteBall(Clone)")
         {
-            ballRigidbody.AddForce(Camera.main.transform.forward * whiteFirePower, ForceMode.Force);
-            whiteBalls.Remove(_bullet);
+            //ballRigidbody.AddForce(Camera.main.transform.forward * whiteFirePower, ForceMode.Force);
+           // whiteBalls.Remove(_bullet);
+                //network inst
+            PhotonNetwork.Instantiate("whiteBall", bulletPos,
+                                                   _bullet.transform.rotation,
+                                                   0);
         }
         if (_bullet.name == "redBall(Clone)")
         {
-            ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
-            redBalls.Remove(_bullet);
+           // ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
+           // redBalls.Remove(_bullet);
+            //network inst
+            PhotonNetwork.Instantiate("redBall", bulletPos,
+                                                   _bullet.transform.rotation,
+                                                   0);
         }
         if (_bullet.name == "blueBall(Clone)")
         {
-            ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
-            blueBalls.Remove(_bullet);
+            //ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
+            //blueBalls.Remove(_bullet);
+            //network inst
+            PhotonNetwork.Instantiate("blueBall", bulletPos,
+                                                   _bullet.transform.rotation,
+                                                   0);
         }
         if (_bullet.name == "greenBall(Clone)")
         {
-            ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
-            greenBalls.Remove(_bullet);
+            //ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
+            //greenBalls.Remove(_bullet);
+            //network inst
+            PhotonNetwork.Instantiate("greenBall", bulletPos,
+                                                   _bullet.transform.rotation,
+                                                   0);
         }
 
-        if (blueBalls.Count < 3)
-            TopUpPool(10, false, false, false, true);
-        else if(whiteBalls.Count < 3)
-            TopUpPool(10, true, false, false, false);
-        else if(redBalls.Count < 3)
-            TopUpPool(10, false, true, false , false);
-        else if(greenBalls.Count < 3)
-            TopUpPool(10, false, false, true, false);
+        _bullet.SetActive(false);
     }
 
 
@@ -267,3 +272,14 @@ public class Player : PlayerClass {
 
 
 }
+
+
+//OLD SHOOTING METHOD
+      //if (blueBalls.Count < 3)
+      //      TopUpPool(10, false, false, false, true);
+      //  else if (whiteBalls.Count < 3)
+      //      TopUpPool(10, true, false, false, false);
+      //  else if (redBalls.Count < 3)
+      //      TopUpPool(10, false, true, false, false);
+      //  else if (greenBalls.Count < 3)
+      //      TopUpPool(10, false, false, true, false);
