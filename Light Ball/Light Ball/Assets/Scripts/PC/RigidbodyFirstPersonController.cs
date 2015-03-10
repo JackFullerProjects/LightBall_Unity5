@@ -7,9 +7,15 @@ using UnityStandardAssets.CrossPlatformInput;
 [RequireComponent(typeof (CapsuleCollider))]
 public class RigidbodyFirstPersonController : MonoBehaviour
 {
+    [SerializeField] public static bool UsingController;
+    public bool ControllerInUse;
+
     [Serializable]
     public class MovementSettings
     {
+        
+
+
         public float ForwardSpeed = 8.0f;   // Speed when walking forward
         public float BackwardSpeed = 4.0f;  // Speed when walking backwards
         public float StrafeSpeed = 4.0f;    // Speed when walking sideways
@@ -43,7 +49,7 @@ public class RigidbodyFirstPersonController : MonoBehaviour
 				CurrentTargetSpeed = ForwardSpeed;
 			}
 #if !MOBILE_INPUT
-            if (Input.GetKey(RunKey))
+            if (Input.GetKey(RunKey) || Input.GetButton("LS_1"))
             {
 	            CurrentTargetSpeed *= RunMultiplier;
 	            m_Running = true;
@@ -117,6 +123,8 @@ public class RigidbodyFirstPersonController : MonoBehaviour
 
     private void Start()
     {
+        UsingController = ControllerInUse;
+
         m_RigidBody = GetComponent<Rigidbody>();
         m_Capsule = GetComponent<CapsuleCollider>();
         mouseLook.Init (transform, cam.transform);
@@ -127,7 +135,7 @@ public class RigidbodyFirstPersonController : MonoBehaviour
     {
         RotateView();
 
-        if (CrossPlatformInputManager.GetButtonDown("Jump") && !m_Jump)
+        if ((CrossPlatformInputManager.GetButtonDown("Jump") || Input.GetButtonDown("A_1")) && !m_Jump)
         {
             m_Jump = true;
         }

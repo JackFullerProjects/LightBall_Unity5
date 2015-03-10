@@ -43,7 +43,7 @@ public class Player : PlayerClass {
 
     private void UserInput()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q) || Input.GetButtonUp("LB_1"))
         {
             ChangeBall();
         }

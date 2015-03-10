@@ -16,8 +16,7 @@ public class MouseLook
 
 
     private Quaternion m_CharacterTargetRot;
-    private Quaternion m_CameraTargetRot;
-
+    private Quaternion m_CameraTargetRot; 
 
     public void Init(Transform character, Transform camera)
     {
@@ -31,12 +30,12 @@ public class MouseLook
 		float yRot = 0;
 		float xRot = 0;
 
-		if(!FirstPersonController.UsingController)
+		if(!RigidbodyFirstPersonController.UsingController)
 		{
 			yRot = Input.GetAxis("Mouse X") * XSensitivity;
 			xRot = Input.GetAxis("Mouse Y") * YSensitivity;
 		}
-		if(FirstPersonController.UsingController)
+        if (RigidbodyFirstPersonController.UsingController)
 		{
 			yRot = Input.GetAxis("R_XAxis_1") * XSensitivity;
 			xRot = -Input.GetAxis("R_YAxis_1") * YSensitivity;
