@@ -1,21 +1,49 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class Player : PlayerClass {
 
-
+    [Header("Controller Bool")]
+    public bool useController;
 	PlayerData playerData = new PlayerData(100, 100, 0);
 
+    [Header("Ball Variables")]
+    [Header("Arrays Ball Colours must be the same")]
 	public GameObject[] lightBallPrefabs;
 	public string[] lightBallMode;
-	private int ballIndex;
+    public Material[] gunMaterials;
+    public float whiteFirePower;
+    public float otherBallFirePower;
+    private int ballIndex = 0;
+    private GameObject gunCylinder1;
+    private GameObject gunCylinder2;
 
     void Start()
     {
         //initialise object pool
         InitPool(pooledAmount, lightBallPrefabs[0], lightBallPrefabs[1], lightBallPrefabs[3], lightBallPrefabs[2]);
+        GameObject.Find("BulletUI").GetComponent<Text>().text = "Ball Equipped: " + lightBallMode[ballIndex];
+        gunCylinder1 = GameObject.Find("Cylinder002");
+        gunCylinder2 = GameObject.Find("Cylinder003");
+
     }
+
+    void Update()
+    {
+        UserInput();
+    }
+
+
+    private void UserInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            ChangeBall();
+        }
+    }
+
 
     #region Object Pooling
     //lists where pooled gameobjects in scene are stored
@@ -23,7 +51,7 @@ public class Player : PlayerClass {
     protected List<GameObject> blueBalls = new List<GameObject>();
     protected List<GameObject> whiteBalls = new List<GameObject>();
     protected List<GameObject> greenBalls = new List<GameObject>();
-    private int pooledAmount = 5;//amount of each pobject to pool
+    private int pooledAmount = 10;//amount of each object to pool
 
     //method to initilise pool system must be called in start function and passed light ball prefab array elements
     public void InitPool(int size, GameObject _white, GameObject _red, GameObject _green, GameObject _blue)
@@ -63,23 +91,72 @@ public class Player : PlayerClass {
         }
     }
 
+    public void TopUpPool(int size, bool topUpWhite, bool topUpRed, bool topUpGreen, bool topUpBlue)
+    {
+        Vector3 spawnPos = new Vector3(100, 100, 100);//object pool position
+
+        if(topUpWhite)
+        {
+            for (int i = 0; i < pooledAmount; i++)
+            {
+                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[0]);
+                obj.transform.position = spawnPos;
+                whiteBalls.Add(obj);
+                obj.SetActive(false);
+            }
+        }
+        else if (topUpRed)
+        {
+            for (int i = 0; i < pooledAmount; i++)
+            {
+                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[1]);
+                obj.transform.position = spawnPos;
+                redBalls.Add(obj);
+                obj.SetActive(false);
+            }
+        }
+        else if (topUpGreen)
+        {
+            for (int i = 0; i < pooledAmount; i++)
+            {
+                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[3]);
+                obj.transform.position = spawnPos;
+                greenBalls.Add(obj);
+                obj.SetActive(false);
+            }
+        }
+        else if (topUpBlue)
+        {
+            for (int i = 0; i < pooledAmount; i++)
+            {
+                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[2]);
+                obj.transform.position = spawnPos;
+                blueBalls.Add(obj);
+                obj.SetActive(false);
+            }
+        }
+    }
     #endregion
 
     #region Light Ball Systems
 
     //this method can be called on button press or scoll wheel and the Boolean negates whether to increase the array index or not
-    public void ChangeBall(bool Increase)
+    public void ChangeBall()
     {
-        if (Increase)
-            ballIndex++;
-        else
-            ballIndex--;
-
+        ballIndex++;
         //dont let ball index got out of the array bounds
         if (ballIndex > lightBallPrefabs.Length - 1)
-            ballIndex--;
-        else if (ballIndex < 0)
             ballIndex = 0;
+
+        GameObject.Find("BulletUI").GetComponent<Text>().text = "Ball Equipped: " + lightBallMode[ballIndex];
+
+        //Material[] _gunMats = gunCylinder1.GetComponent<MeshRenderer>().materials;
+        //_gunMats[0] = gunMaterials[ballIndex];
+        //gunCylinder1.GetComponent<MeshRenderer>().materials = _gunMats;
+ 
+        
+        
+        //gunCylinder2.GetComponent<MeshRenderer>().materials[1] = gunMaterials[ballIndex];
     }
     #endregion
 
@@ -94,43 +171,27 @@ public class Player : PlayerClass {
 
         switch (ballIndex)
         {
-            case 1:
+            case 0:
 
                  _bullet = FetchFromPool(whiteBalls);
-
-                 if (!_bullet)//if fetchfrompool returns null dont continue
-                     return;
-
                  ActivateBullet(_bullet);
+                 break;
+
+            case 1:
+
+                _bullet = FetchFromPool(redBalls);
+                ActivateBullet(_bullet);
                 break;
 
             case 2:
 
-                _bullet = FetchFromPool(redBalls);
-
-                if (!_bullet)//if fetchfrompool returns null dont continue
-                    return;
-
+                _bullet = FetchFromPool(blueBalls);
                 ActivateBullet(_bullet);
                 break;
 
             case 3:
 
-                _bullet = FetchFromPool(blueBalls);
-
-                if (!_bullet)//if fetchfrompool returns null dont continue
-                    return;
-
-                ActivateBullet(_bullet);
-                break;
-
-            case 4:
-
                 _bullet = FetchFromPool(greenBalls);
-
-                if (!_bullet)//if fetchfrompool returns null dont continue
-                    return;
-
                 ActivateBullet(_bullet);
                 break;
         }
@@ -138,31 +199,59 @@ public class Player : PlayerClass {
     }
 
     //Activate bullet will find a bullet in the pool and move it to the correct position ready to be fired
-    //JACK YOU MAY WANT TO EDIT THIS FUNCTION 
     private void ActivateBullet(GameObject _bullet)
     {
         _bullet.SetActive(true);//turn ball on
-        Vector3 bulletPos = transform.TransformPoint(Vector3.forward);//set bullet position
+        Vector3 bulletPos = Camera.main.transform.position;//set bullet position
         _bullet.transform.position = bulletPos;
+        _bullet.transform.rotation = Camera.main.transform.rotation;
+        Rigidbody ballRigidbody = _bullet.GetComponent<Rigidbody>();
 
-        //We still need to add a force/direction to the ball.
+        if (_bullet.name == "whiteBall(Clone)")
+        {
+            ballRigidbody.AddForce(Camera.main.transform.forward * whiteFirePower, ForceMode.Force);
+            whiteBalls.Remove(_bullet);
+        }
+        else if (_bullet.name == "redBall(Clone)")
+        {
+            ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
+            redBalls.Remove(_bullet);
+        }
+        else  if (_bullet.name == "blueBall(Clone)")
+        {
+            ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
+            blueBalls.Remove(_bullet);
+        }
+        else if (_bullet.name == "greenBall(Clone)")
+        {
+            ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
+            greenBalls.Remove(_bullet);
+        }
+
+        if (blueBalls.Count < 3)
+            TopUpPool(10, false, false, false, true);
+        else if(whiteBalls.Count < 3)
+            TopUpPool(10, true, false, false, false);
+        else if(redBalls.Count < 3)
+            TopUpPool(10, false, true, false , false);
+        else if(greenBalls.Count < 3)
+            TopUpPool(10, false, false, true, false);
     }
-
     private GameObject FetchFromPool(List<GameObject> pool)
     {
         for (int i = 0; i < pool.Count; i++)
         {
-            if(!pool[i].activeInHierarchy)
+            if (!pool[i].activeInHierarchy)
             {
                 return pool[i].gameObject;
             }
         }
 
-        //if we reach here we dont have any free balls in the pool to return null
-        Debug.Log("No balls avaliable in pool");
         return null;
     }
 
     #endregion 
+
+
 
 }

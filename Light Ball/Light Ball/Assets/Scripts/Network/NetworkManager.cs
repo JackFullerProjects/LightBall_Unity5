@@ -90,7 +90,7 @@ public class NetworkManager : MonoBehaviour {
 
 		int spawnIndex = Random.Range(0, spawnPoints.Length);
 
-		player = PhotonNetwork.Instantiate("Player", spawnPoints[spawnIndex].position,
+		player = PhotonNetwork.Instantiate("PlayerRB", spawnPoints[spawnIndex].position,
 		                                   			 spawnPoints[spawnIndex].rotation,
 		                                             0);
 

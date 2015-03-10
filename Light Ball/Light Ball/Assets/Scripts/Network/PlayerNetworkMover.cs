@@ -22,8 +22,8 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 	{
 		if(PhotonNetwork.connected)
 		{
-			PhotonNetwork.sendRateOnSerialize = 20;
-			PhotonNetwork.sendRate = 20;
+			PhotonNetwork.sendRateOnSerialize = 5;
+			PhotonNetwork.sendRate = 5;
 			PhotonNetwork.isMessageQueueRunning = true;
 		}
 
@@ -33,7 +33,8 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 		if(photonView.isMine)
 		{
 			GetComponent<FirstPersonController>().enabled = true;
-			GetComponent<AudioSource>().enabled = true;
+            GetComponent<Player>().enabled = true;
+            GetComponent<PlayerShoot>().enabled = true;
 			GetComponent<Rigidbody>().useGravity = true;
 
 			foreach(Transform child in transform)
@@ -42,6 +43,7 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 				{
 					child.GetComponent<Camera>().enabled = true;
 					child.GetComponent<AudioListener>().enabled = true;
+                    child.GetComponent<HeadBob>().enabled = true;
 
 					foreach(Camera cam in child.GetComponentsInChildren<Camera>())
 					{
@@ -58,13 +60,12 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 
 	void Update()
 	{
-		UpdateData();
+        if(!photonView.isMine)
+		    UpdateData();
 	}
 	
 	private void UpdateData()
 	{
-		if(photonView.isMine)
-			return;
 		
 		if(initialLoad)
 		{
@@ -72,30 +73,29 @@ public class PlayerNetworkMover : Photon.MonoBehaviour {
 			transform.position = correctPlayerPos;
 			transform.rotation = correctPlayerRot;
 		}
-		
-		this.transform.position = Vector3.Lerp(transform.position, correctPlayerPos, 0.1f) + velocity * Time.deltaTime; //for advance + rigibody.velocity * time.deltaTime
-		this.transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, 0.1f);
+
+        transform.position = Vector3.Lerp(transform.position, correctPlayerPos, Time.deltaTime * 5);
+        transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * 5);
 	}
-	
-	
-	
-	
-	void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-	{
-		if (stream.isWriting)
-		{
-			stream.SendNext(this.transform.position);
-			stream.SendNext(this.transform.rotation);
-			stream.SendNext(GetComponent<Rigidbody>().velocity);
-			
-		}
-		else
-		{
-			this.correctPlayerPos = (Vector3)stream.ReceiveNext();
-			this.correctPlayerRot = (Quaternion)stream.ReceiveNext();
-			this.velocity = (Vector3)stream.ReceiveNext();
-		}
-	}
+
+
+
+
+    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.isWriting)
+        {
+            //We own this player: send the others our data
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            //Network player, receive data
+            correctPlayerPos = (Vector3)stream.ReceiveNext();
+            correctPlayerRot = (Quaternion)stream.ReceiveNext();
+        }
+    }
 }
 
 
