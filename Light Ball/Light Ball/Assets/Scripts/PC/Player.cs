@@ -212,6 +212,11 @@ public class Player : PlayerClass {
         _bullet.transform.rotation = Camera.main.transform.rotation;
         Rigidbody ballRigidbody = _bullet.GetComponent<Rigidbody>();
 
+        //network inst
+        PhotonNetwork.Instantiate("whiteBall", bulletPos,
+                                                     _bullet.transform.rotation,
+                                                     0);
+
         if (_bullet.name == "whiteBall(Clone)")
         {
             ballRigidbody.AddForce(Camera.main.transform.forward * whiteFirePower, ForceMode.Force);

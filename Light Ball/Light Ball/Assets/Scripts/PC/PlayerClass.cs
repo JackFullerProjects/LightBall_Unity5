@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerClass : MonoBehaviour {
+public class PlayerClass : Photon.MonoBehaviour {
 
     public class PlayerData
     {
