@@ -17,16 +17,21 @@ public class Player : PlayerClass {
     public float whiteFirePower;
     public float otherBallFirePower;
     private int ballIndex = 0;
-    private GameObject gunCylinder1;
-    private GameObject gunCylinder2;
+
+    [HideInInspector]
+    public GameObject gun;
+    [HideInInspector]
+    public GameObject gunCylinder1;
+    [HideInInspector]
+    public GameObject gunCylinder2;
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         //initialise object pool
-        InitPool(pooledAmount, lightBallPrefabs[0], lightBallPrefabs[1], lightBallPrefabs[3], lightBallPrefabs[2]);
-        GameObject.Find("BulletUI").GetComponent<Text>().text = "Ball Equipped: " + lightBallMode[ballIndex];
-        gunCylinder1 = GameObject.Find("Cylinder002");
-        gunCylinder2 = GameObject.Find("Cylinder003");
+        InitPool(pooledAmount, lightBallPrefabs[0], lightBallPrefabs[1], lightBallPrefabs[2], lightBallPrefabs[3]);
 
     }
 
@@ -119,7 +124,7 @@ public class Player : PlayerClass {
         {
             for (int i = 0; i < pooledAmount; i++)
             {
-                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[3]);
+                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[2]);
                 obj.transform.position = spawnPos;
                 greenBalls.Add(obj);
                 obj.SetActive(false);
@@ -129,7 +134,7 @@ public class Player : PlayerClass {
         {
             for (int i = 0; i < pooledAmount; i++)
             {
-                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[2]);
+                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[3]);
                 obj.transform.position = spawnPos;
                 blueBalls.Add(obj);
                 obj.SetActive(false);
@@ -148,15 +153,15 @@ public class Player : PlayerClass {
         if (ballIndex > lightBallPrefabs.Length - 1)
             ballIndex = 0;
 
-        GameObject.Find("BulletUI").GetComponent<Text>().text = "Ball Equipped: " + lightBallMode[ballIndex];
+        Material[] _gunMats = gunCylinder2.GetComponent<MeshRenderer>().materials;
+        _gunMats[1] = gunMaterials[ballIndex];
+        gunCylinder2.GetComponent<MeshRenderer>().materials = _gunMats;
 
-        //Material[] _gunMats = gunCylinder1.GetComponent<MeshRenderer>().materials;
-        //_gunMats[0] = gunMaterials[ballIndex];
-        //gunCylinder1.GetComponent<MeshRenderer>().materials = _gunMats;
- 
-        
-        
-        //gunCylinder2.GetComponent<MeshRenderer>().materials[1] = gunMaterials[ballIndex];
+        _gunMats = gunCylinder1.GetComponent<MeshRenderer>().materials;
+        _gunMats[0] = gunMaterials[ballIndex];
+        gunCylinder1.GetComponent<MeshRenderer>().materials = _gunMats;
+      
+
     }
     #endregion
 
@@ -202,7 +207,7 @@ public class Player : PlayerClass {
     private void ActivateBullet(GameObject _bullet)
     {
         _bullet.SetActive(true);//turn ball on
-        Vector3 bulletPos = Camera.main.transform.position;//set bullet position
+        Vector3 bulletPos = gun.transform.TransformPoint(Vector3.forward);//Camera.main.transform.position;//set bullet position
         _bullet.transform.position = bulletPos;
         _bullet.transform.rotation = Camera.main.transform.rotation;
         Rigidbody ballRigidbody = _bullet.GetComponent<Rigidbody>();
@@ -212,17 +217,17 @@ public class Player : PlayerClass {
             ballRigidbody.AddForce(Camera.main.transform.forward * whiteFirePower, ForceMode.Force);
             whiteBalls.Remove(_bullet);
         }
-        else if (_bullet.name == "redBall(Clone)")
+        if (_bullet.name == "redBall(Clone)")
         {
             ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
             redBalls.Remove(_bullet);
         }
-        else  if (_bullet.name == "blueBall(Clone)")
+        if (_bullet.name == "blueBall(Clone)")
         {
             ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
             blueBalls.Remove(_bullet);
         }
-        else if (_bullet.name == "greenBall(Clone)")
+        if (_bullet.name == "greenBall(Clone)")
         {
             ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
             greenBalls.Remove(_bullet);
@@ -237,6 +242,8 @@ public class Player : PlayerClass {
         else if(greenBalls.Count < 3)
             TopUpPool(10, false, false, true, false);
     }
+
+
     private GameObject FetchFromPool(List<GameObject> pool)
     {
         for (int i = 0; i < pool.Count; i++)
