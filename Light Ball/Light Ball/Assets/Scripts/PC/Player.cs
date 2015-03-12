@@ -31,7 +31,7 @@ public class Player : PlayerClass {
         Cursor.visible = false;
 
         //initialise object pool
-        InitPool(pooledAmount, lightBallPrefabs[0], lightBallPrefabs[1], lightBallPrefabs[2], lightBallPrefabs[3]);
+        InitPool(pooledAmount, lightBallPrefabs[0], lightBallPrefabs[1], lightBallPrefabs[2]);
 
     }
 
@@ -55,11 +55,10 @@ public class Player : PlayerClass {
     protected List<GameObject> redBalls = new List<GameObject>();
     protected List<GameObject> blueBalls = new List<GameObject>();
     protected List<GameObject> whiteBalls = new List<GameObject>();
-    protected List<GameObject> greenBalls = new List<GameObject>();
     private int pooledAmount = 10;//amount of each object to pool
 
     //method to initilise pool system must be called in start function and passed light ball prefab array elements
-    public void InitPool(int size, GameObject _white, GameObject _red, GameObject _green, GameObject _blue)
+    public void InitPool(int size, GameObject _white, GameObject _red, GameObject _blue)
     {
         Vector3 spawnPos = new Vector3(100, 100, 100);//object pool position
 
@@ -78,15 +77,6 @@ public class Player : PlayerClass {
             redBalls.Add(obj);
             obj.SetActive(false);
         }
-
-        for (int i = 0; i < pooledAmount; i++)
-        {
-            GameObject obj = (GameObject)Instantiate(_green);
-            obj.transform.position = spawnPos;
-            greenBalls.Add(obj);
-            obj.SetActive(false);
-        }
-
         for (int i = 0; i < pooledAmount; i++)
         {
             GameObject obj = (GameObject)Instantiate(_blue);
@@ -96,7 +86,7 @@ public class Player : PlayerClass {
         }
     }
 
-    public void TopUpPool(int size, bool topUpWhite, bool topUpRed, bool topUpGreen, bool topUpBlue)
+    public void TopUpPool(int size, bool topUpWhite, bool topUpRed, bool topUpBlue)
     {
         Vector3 spawnPos = new Vector3(100, 100, 100);//object pool position
 
@@ -117,16 +107,6 @@ public class Player : PlayerClass {
                 GameObject obj = (GameObject)Instantiate(lightBallPrefabs[1]);
                 obj.transform.position = spawnPos;
                 redBalls.Add(obj);
-                obj.SetActive(false);
-            }
-        }
-        else if (topUpGreen)
-        {
-            for (int i = 0; i < pooledAmount; i++)
-            {
-                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[2]);
-                obj.transform.position = spawnPos;
-                greenBalls.Add(obj);
                 obj.SetActive(false);
             }
         }
@@ -166,7 +146,6 @@ public class Player : PlayerClass {
     #endregion
 
 
-    //TODO: JACK YOU MAY NEED TO EDIT THIS REGIONS METHODS
     #region Fire 
 
     //Call this method to fire a ball
@@ -194,11 +173,6 @@ public class Player : PlayerClass {
                 ActivateBullet(_bullet);
                 break;
 
-            case 3:
-
-                _bullet = FetchFromPool(greenBalls);
-                ActivateBullet(_bullet);
-                break;
         }
 
     }
@@ -212,45 +186,39 @@ public class Player : PlayerClass {
         _bullet.transform.rotation = Camera.main.transform.rotation;
         Rigidbody ballRigidbody = _bullet.GetComponent<Rigidbody>();
 
+        //raycast from middle of camera to get where cursor is aiming
+        Transform cam = Camera.main.transform;
+        RaycastHit hit;
+        Vector3 hitPoint;
 
-        if (_bullet.name == "whiteBall(Clone)")
+        if (Physics.Raycast(cam.position, cam.forward, out hit, 10000))
         {
-            //ballRigidbody.AddForce(Camera.main.transform.forward * whiteFirePower, ForceMode.Force);
-           // whiteBalls.Remove(_bullet);
-                //network inst
-            PhotonNetwork.Instantiate("whiteBall", bulletPos,
-                                                   _bullet.transform.rotation,
-                                                   0);
-        }
-        if (_bullet.name == "redBall(Clone)")
-        {
-           // ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
-           // redBalls.Remove(_bullet);
-            //network inst
-            PhotonNetwork.Instantiate("redBall", bulletPos,
-                                                   _bullet.transform.rotation,
-                                                   0);
-        }
-        if (_bullet.name == "blueBall(Clone)")
-        {
-            //ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
-            //blueBalls.Remove(_bullet);
-            //network inst
-            PhotonNetwork.Instantiate("blueBall", bulletPos,
-                                                   _bullet.transform.rotation,
-                                                   0);
-        }
-        if (_bullet.name == "greenBall(Clone)")
-        {
-            //ballRigidbody.AddForce(Camera.main.transform.forward * otherBallFirePower, ForceMode.Force);
-            //greenBalls.Remove(_bullet);
-            //network inst
-            PhotonNetwork.Instantiate("greenBall", bulletPos,
-                                                   _bullet.transform.rotation,
-                                                   0);
-        }
+            hitPoint = hit.point;
 
-        _bullet.SetActive(false);
+            if (_bullet.name == "whiteBall(Clone)")
+            {
+                GameObject clone = PhotonNetwork.Instantiate("whiteBall", bulletPos,
+                                                        _bullet.transform.rotation,
+                                                        0) as GameObject;
+                clone.transform.LookAt(hitPoint);//make projectile travel towards raycast hit point and where the reticle was aiming
+            }
+            if (_bullet.name == "redBall(Clone)")
+            {
+                GameObject clone = PhotonNetwork.Instantiate("redBall", bulletPos,
+                                                       _bullet.transform.rotation,
+                                                       0) as GameObject;
+                clone.transform.LookAt(hitPoint);
+            }
+            if (_bullet.name == "blueBall(Clone)")
+            {
+                GameObject clone = PhotonNetwork.Instantiate("blueBall", bulletPos,
+                                                        _bullet.transform.rotation,
+                                                        0) as GameObject;
+                clone.transform.LookAt(hitPoint);
+            }
+
+            _bullet.SetActive(false);
+        }
     }
 
 

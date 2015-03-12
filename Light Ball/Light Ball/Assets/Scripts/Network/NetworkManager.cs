@@ -12,6 +12,7 @@ public class NetworkManager : MonoBehaviour {
 	[SerializeField] InputField username;
 	[SerializeField] InputField roomName;
 	[SerializeField] InputField roomList;
+    [SerializeField] Text PlayerCount;
 
 
 	public string VERSION = "v0.0.1";
@@ -32,6 +33,11 @@ public class NetworkManager : MonoBehaviour {
 		StartCoroutine("UpdateConnectionString");
 
 	}
+
+    void Update()
+    {
+        GameObject.Find("NetworkManager").GetComponent<ChatBox>().AddLine("New Player Has Joined The Game");
+    }
 
 	public void JoinRoom()
 	{
@@ -54,6 +60,7 @@ public class NetworkManager : MonoBehaviour {
 	void OnJoinedLobby()
 	{
 		serverWindow.SetActive(true);
+
 	}
 
 	void OnReceivedRoomListUpdate()
@@ -72,8 +79,16 @@ public class NetworkManager : MonoBehaviour {
 		StopCoroutine("UpdateConnectionString");
 		connectionText.text = "";
 		serverWindow.SetActive(false);
+
+        PlayerCount.text = "Players In Room: " + PhotonNetwork.playerList.Length;
+
 		StartSpawnProcess(1f);
 	}
+
+    void OnLeaveRoom()
+    {
+        Debug.Log("Left");
+    }
 
 	void StartSpawnProcess(float _respawnTime)
 	{

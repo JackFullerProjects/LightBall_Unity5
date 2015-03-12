@@ -29,7 +29,7 @@ public class BulletNetworkMover : MonoBehaviour {
 
     void Start()
     {
-        GetComponent<Rigidbody>().AddForce(Camera.main.transform.forward * FireForce, ForceMode.Force);
+        GetComponent<Rigidbody>().AddForce(transform.forward * FireForce, ForceMode.Force);
         pv = GetComponent<PhotonView>();
         latestCorrectPos = transform.position;
         onUpdatePos = transform.position;
