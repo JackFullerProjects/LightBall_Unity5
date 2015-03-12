@@ -36,7 +36,7 @@ public class NetworkManager : MonoBehaviour {
 
     void Update()
     {
-        GameObject.Find("NetworkManager").GetComponent<ChatBox>().AddLine("New Player Has Joined The Game");
+        PlayerCount.text = "Players In Room: " + PhotonNetwork.playerList.Length;
     }
 
 	public void JoinRoom()
@@ -79,9 +79,7 @@ public class NetworkManager : MonoBehaviour {
 		StopCoroutine("UpdateConnectionString");
 		connectionText.text = "";
 		serverWindow.SetActive(false);
-
-        PlayerCount.text = "Players In Room: " + PhotonNetwork.playerList.Length;
-
+        GameObject.Find("NetworkManager").GetComponent<ChatBox>().AddLine("New Player Has Joined The Game");
 		StartSpawnProcess(1f);
 	}
 
