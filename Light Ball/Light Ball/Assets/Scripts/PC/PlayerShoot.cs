@@ -31,7 +31,8 @@ public class PlayerShoot : MonoBehaviour {
                     var player = GetComponent<Player>();
                     player.Fire();
                     PlayerShooting = true;
-                    StartCoroutine(ShootingCooldown(0.2f));
+                    //StartCoroutine(ShootingCooldown(0.2f));
+                    StartCoroutine(FireCooldown(shootCooldown));
                 }
             }
             else
@@ -41,24 +42,32 @@ public class PlayerShoot : MonoBehaviour {
                     canFire = false;
                     var player = GetComponent<Player>();
                     player.Fire();
+                    StartCoroutine(FireCooldown(shootCooldown));
                 }
             }
         }
-        else
-        {
-            shootCooldown -= Time.deltaTime;
-            if(shootCooldown <= 0)
-            {
-                canFire = true;
-                shootCooldown = storeShootCooldown;
-            }
-        }
+        //else
+        //{
+        //    shootCooldown -= Time.deltaTime;
+        //    if (shootCooldown <= 0)
+        //    {
+        //        canFire = true;
+        //        shootCooldown = storeShootCooldown;
+        //    }
+        //}
 	
 	}
 
-    IEnumerator ShootingCooldown(float waitTime)
+    IEnumerator FireCooldown(float _waitTime)
     {
-        yield return new WaitForSeconds(waitTime);
+        yield return new WaitForSeconds(_waitTime);
+        canFire = true;
+        PlayerShooting = false;
+    }
+
+    IEnumerator ShootingCooldown(float _waitTime)
+    {
+        yield return new WaitForSeconds(_waitTime);
         PlayerShooting = false;
     }
 }

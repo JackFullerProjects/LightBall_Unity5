@@ -24,6 +24,8 @@ public class Player : PlayerClass {
     public GameObject gunCylinder1;
     [HideInInspector]
     public GameObject gunCylinder2;
+    private bool canChangeColour = true;
+    public float changeCooldown;
 
     void Start()
     {
@@ -51,7 +53,8 @@ public class Player : PlayerClass {
     {
         if (Input.GetKeyDown(KeyCode.Q) || Input.GetButtonUp("LB_1"))
         {
-            ChangeBall();
+            if(canChangeColour)
+                ChangeBall();
         }
     }
 
@@ -134,6 +137,7 @@ public class Player : PlayerClass {
     //this method can be called on button press or scoll wheel and the Boolean negates whether to increase the array index or not
     public void ChangeBall()
     {
+        canChangeColour = false;
         ballIndex++;
         //dont let ball index got out of the array bounds
         if (ballIndex > lightBallPrefabs.Length - 1)
@@ -146,8 +150,15 @@ public class Player : PlayerClass {
         _gunMats = gunCylinder1.GetComponent<MeshRenderer>().materials;
         _gunMats[0] = gunMaterials[ballIndex];
         gunCylinder1.GetComponent<MeshRenderer>().materials = _gunMats;
+        StartCoroutine(ChangeCooldown(changeCooldown));
       
 
+    }
+
+    IEnumerator ChangeCooldown(float _wait)
+    {
+        yield return new WaitForSeconds(_wait);
+        canChangeColour = true;
     }
     #endregion
 
