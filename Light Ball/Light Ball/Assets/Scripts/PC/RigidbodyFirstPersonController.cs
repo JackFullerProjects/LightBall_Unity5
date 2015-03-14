@@ -123,7 +123,11 @@ public class RigidbodyFirstPersonController : MonoBehaviour
 
     private void Start()
     {
-        UsingController = ControllerInUse;
+        ControllerState controllerstate = GetComponent<ControllerState>();
+        if (controllerstate.inputDevice == ControllerState.InputState.Keyboard)
+            UsingController = false;
+        else
+            UsingController = true;
 
         m_RigidBody = GetComponent<Rigidbody>();
         m_Capsule = GetComponent<CapsuleCollider>();

@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class Player : PlayerClass {
 
-    [Header("Controller Bool")]
-    public bool useController;
+    //Header("Controller Bool")]
+    private bool useController;
 	PlayerData playerData = new PlayerData(100, 100, 0);
 
     [Header("Ball Variables")]
@@ -27,6 +27,12 @@ public class Player : PlayerClass {
 
     void Start()
     {
+        ControllerState controllerstate = GetComponent<ControllerState>();
+        if (controllerstate.inputDevice == ControllerState.InputState.Keyboard)
+            useController = false;
+        else
+            useController = true;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 

@@ -7,38 +7,58 @@ public class PlayerShoot : MonoBehaviour {
 
     private bool PlayerShooting = false;
 
+    //shooting cooldown
+    public float shootCooldown;
+    private float storeShootCooldown;
+    private bool canFire = true;
+
     void Start()
     {
+        storeShootCooldown = shootCooldown;
         RPNM_Script = gameObject.GetComponent<RigidbodyFirstPersonController>();
     }
 	
 	// Update is called once per frame
 	void Update () {
 
-        if (RPNM_Script.ControllerInUse)
+        if (canFire)
         {
-            if (Input.GetAxis("R_Trigger_1") > 0 && !PlayerShooting)
+            if (RPNM_Script.ControllerInUse)
             {
-                var player = GetComponent<Player>();
-                player.Fire();
-                PlayerShooting = true;
-                StartCoroutine(ShootingCooldown());
+                if (Input.GetAxis("R_Trigger_1") > 0 && !PlayerShooting)
+                {
+                    canFire = false;
+                    var player = GetComponent<Player>();
+                    player.Fire();
+                    PlayerShooting = true;
+                    StartCoroutine(ShootingCooldown(0.2f));
+                }
+            }
+            else
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    canFire = false;
+                    var player = GetComponent<Player>();
+                    player.Fire();
+                }
             }
         }
         else
         {
-            if (Input.GetMouseButtonDown(0))
+            shootCooldown -= Time.deltaTime;
+            if(shootCooldown <= 0)
             {
-                var player = GetComponent<Player>();
-                player.Fire();
+                canFire = true;
+                shootCooldown = storeShootCooldown;
             }
-        }     
+        }
 	
 	}
 
-    IEnumerator ShootingCooldown()
+    IEnumerator ShootingCooldown(float waitTime)
     {
-        yield return new WaitForSeconds(0.2F);
+        yield return new WaitForSeconds(waitTime);
         PlayerShooting = false;
     }
 }
