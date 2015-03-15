@@ -30,6 +30,7 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
             GetComponent<Player>().enabled = true;
             GetComponent<PlayerShoot>().enabled = true;
             GetComponent<Rigidbody>().useGravity = true;
+            GetComponent<Player>().GunAnimation.GetComponent<Animation>().enabled = true;
 
             foreach (Transform child in transform)
             {
@@ -146,5 +147,11 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
                 transform.localRotation = latest.rot;
             }
         }
+    }
+
+    [RPC]
+    public void TakeDamage()
+    {
+        LevelManager.RespawnPlayer(gameObject);
     }
 }

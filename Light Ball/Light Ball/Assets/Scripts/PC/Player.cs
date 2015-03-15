@@ -18,14 +18,23 @@ public class Player : PlayerClass {
     public float otherBallFirePower;
     private int ballIndex = 0;
 
+    private bool canChangeColour = true;
+    private bool playGunAnimationOnce = false;
+    public float changeCooldown;
+    private bool currentlyChangingColour;
+
+    [Header("Gun Aesthetic Variables")]
     [HideInInspector]
     public GameObject gun;
     [HideInInspector]
     public GameObject gunCylinder1;
     [HideInInspector]
     public GameObject gunCylinder2;
-    private bool canChangeColour = true;
-    public float changeCooldown;
+    [SerializeField]
+    [HideInInspector]
+    public GameObject GunAnimation;
+    public ParticleSystem gunParticle;
+        
 
     void Start()
     {
@@ -46,8 +55,35 @@ public class Player : PlayerClass {
     void Update()
     {
         UserInput();
+        AnimationManager();
     }
 
+    private void AnimationManager()
+    {
+        if (currentlyChangingColour)
+        {
+            if (!GunAnimation.GetComponent<Animation>().isPlaying && !playGunAnimationOnce)
+            {
+                playGunAnimationOnce = true;
+                GunAnimation.GetComponent<Animation>().Play();
+            }
+            if (!GunAnimation.GetComponent<Animation>().isPlaying)
+            {
+                Material[] _gunMats = gunCylinder2.GetComponent<MeshRenderer>().materials;
+                _gunMats[1] = gunMaterials[ballIndex];
+                gunCylinder2.GetComponent<MeshRenderer>().materials = _gunMats;
+
+                _gunMats = gunCylinder1.GetComponent<MeshRenderer>().materials;
+                _gunMats[0] = gunMaterials[ballIndex];
+                gunCylinder1.GetComponent<MeshRenderer>().materials = _gunMats;
+                StartCoroutine(ChangeCooldown(changeCooldown));
+                currentlyChangingColour = false;
+                canChangeColour = true;
+                playGunAnimationOnce = false;
+            }
+
+        }
+    }
 
     private void UserInput()
     {
@@ -138,21 +174,11 @@ public class Player : PlayerClass {
     public void ChangeBall()
     {
         canChangeColour = false;
+        currentlyChangingColour = true;
         ballIndex++;
         //dont let ball index got out of the array bounds
         if (ballIndex > lightBallPrefabs.Length - 1)
             ballIndex = 0;
-
-        Material[] _gunMats = gunCylinder2.GetComponent<MeshRenderer>().materials;
-        _gunMats[1] = gunMaterials[ballIndex];
-        gunCylinder2.GetComponent<MeshRenderer>().materials = _gunMats;
-
-        _gunMats = gunCylinder1.GetComponent<MeshRenderer>().materials;
-        _gunMats[0] = gunMaterials[ballIndex];
-        gunCylinder1.GetComponent<MeshRenderer>().materials = _gunMats;
-        StartCoroutine(ChangeCooldown(changeCooldown));
-      
-
     }
 
     IEnumerator ChangeCooldown(float _wait)
@@ -219,19 +245,27 @@ public class Player : PlayerClass {
                                                         0) as GameObject;
                 clone.transform.LookAt(hitPoint);//make projectile travel towards raycast hit point and where the reticle was aiming
             }
-            if (_bullet.name == "redBall(Clone)")
+            else if (_bullet.name == "redBall(Clone)")
             {
-                GameObject clone = PhotonNetwork.Instantiate("redBall", bulletPos,
-                                                       _bullet.transform.rotation,
-                                                       0) as GameObject;
-                clone.transform.LookAt(hitPoint);
+                gunParticle.Play();
+                gunParticle.startColor = Color.red;
+
+                if (hit.collider.gameObject.GetComponent<PhotonView>())
+                {
+                    var playerHitPhoton = hit.collider.gameObject.GetComponent<PhotonView>();
+                    playerHitPhoton.RPC("TakeDamage", PhotonTargets.All);
+                }
             }
-            if (_bullet.name == "blueBall(Clone)")
+            else if (_bullet.name == "blueBall(Clone)")
             {
-                GameObject clone = PhotonNetwork.Instantiate("blueBall", bulletPos,
-                                                        _bullet.transform.rotation,
-                                                        0) as GameObject;
-                clone.transform.LookAt(hitPoint);
+                gunParticle.Play();
+                gunParticle.startColor = Color.blue;
+
+                if(hit.collider.gameObject.GetComponent<PhotonView>())
+                {
+                    var playerHitPhoton = hit.collider.gameObject.GetComponent<PhotonView>();
+                    playerHitPhoton.RPC("TakeDamage", PhotonTargets.All);
+                }
             }
 
             _bullet.SetActive(false);

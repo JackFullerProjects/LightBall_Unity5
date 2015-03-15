@@ -27,22 +27,28 @@ public class PlayerShoot : MonoBehaviour {
             {
                 if (Input.GetAxis("R_Trigger_1") > 0 && !PlayerShooting)
                 {
-                    canFire = false;
-                    var player = GetComponent<Player>();
-                    player.Fire();
-                    PlayerShooting = true;
-                    //StartCoroutine(ShootingCooldown(0.2f));
-                    StartCoroutine(FireCooldown(shootCooldown));
+                    if (!GetComponent<Player>().GunAnimation.GetComponent<Animation>().isPlaying)
+                    {
+                        canFire = false;
+                        var player = GetComponent<Player>();
+                        player.Fire();
+                        PlayerShooting = true;
+                        //StartCoroutine(ShootingCooldown(0.2f));
+                        StartCoroutine(FireCooldown(shootCooldown));
+                    }
                 }
             }
             else
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    canFire = false;
-                    var player = GetComponent<Player>();
-                    player.Fire();
-                    StartCoroutine(FireCooldown(shootCooldown));
+                    if (!GetComponent<Player>().GunAnimation.GetComponent<Animation>().isPlaying)
+                    {
+                        canFire = false;
+                        var player = GetComponent<Player>();
+                        player.Fire();
+                        StartCoroutine(FireCooldown(shootCooldown));
+                    }
                 }
             }
         }

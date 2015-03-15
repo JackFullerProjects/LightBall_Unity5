@@ -14,6 +14,8 @@ public class NetworkManager : MonoBehaviour {
 	[SerializeField] InputField roomList;
     [SerializeField] Text PlayerCount;
 
+    [SerializeField] GameObject playerHUD;
+
 
 	public string VERSION = "v0.0.1";
 
@@ -106,6 +108,8 @@ public class NetworkManager : MonoBehaviour {
 		player = PhotonNetwork.Instantiate("PlayerRB", spawnPoints[spawnIndex].position,
 		                                   			 spawnPoints[spawnIndex].rotation,
 		                                             0);
+
+        playerHUD.SetActive(true);
 
 		lobbyCamera.enabled = false;
 
