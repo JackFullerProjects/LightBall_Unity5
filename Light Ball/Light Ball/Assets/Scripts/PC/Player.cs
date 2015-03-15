@@ -16,7 +16,8 @@ public class Player : PlayerClass {
     public Material[] gunMaterials;
     public float whiteFirePower;
     public float otherBallFirePower;
-    private int ballIndex = 0;
+    [HideInInspector]
+    public int ballIndex = 0;
 
     private bool canChangeColour = true;
     private bool playGunAnimationOnce = false;
@@ -190,7 +191,7 @@ public class Player : PlayerClass {
     #endregion
 
 
-    #region Fire 
+    #region Fire
 
     //Call this method to fire a ball
     public void Fire()
