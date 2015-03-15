@@ -34,6 +34,7 @@ public class Player : PlayerClass {
     [HideInInspector]
     public GameObject GunAnimation;
     public ParticleSystem gunParticle;
+    public AnimationClip[] GunAnimationsArray;
         
 
     void Start()
@@ -65,6 +66,7 @@ public class Player : PlayerClass {
             if (!GunAnimation.GetComponent<Animation>().isPlaying && !playGunAnimationOnce)
             {
                 playGunAnimationOnce = true;
+                GunAnimation.GetComponent<Animation>().clip = GunAnimationsArray[0];
                 GunAnimation.GetComponent<Animation>().Play();
             }
             if (!GunAnimation.GetComponent<Animation>().isPlaying)
@@ -81,7 +83,6 @@ public class Player : PlayerClass {
                 canChangeColour = true;
                 playGunAnimationOnce = false;
             }
-
         }
     }
 
@@ -223,6 +224,9 @@ public class Player : PlayerClass {
     //Activate bullet will find a bullet in the pool and move it to the correct position ready to be fired
     private void ActivateBullet(GameObject _bullet)
     {
+        GunAnimation.GetComponent<Animation>().clip = GunAnimationsArray[1];
+        GunAnimation.GetComponent<Animation>().Play();
+
         _bullet.SetActive(true);//turn ball on
         Vector3 bulletPos = gun.transform.TransformPoint(Vector3.forward);//Camera.main.transform.position;//set bullet position
         _bullet.transform.position = bulletPos;
@@ -247,25 +251,29 @@ public class Player : PlayerClass {
             }
             else if (_bullet.name == "redBall(Clone)")
             {
-                gunParticle.Play();
-                gunParticle.startColor = Color.red;
 
                 if (hit.collider.gameObject.GetComponent<PhotonView>())
                 {
                     var playerHitPhoton = hit.collider.gameObject.GetComponent<PhotonView>();
                     playerHitPhoton.RPC("TakeDamage", PhotonTargets.All);
                 }
+
+                GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
+                clone.GetComponentInChildren<ParticleSystem>().startColor = Color.red;
+                
             }
             else if (_bullet.name == "blueBall(Clone)")
             {
-                gunParticle.Play();
-                gunParticle.startColor = Color.blue;
 
                 if(hit.collider.gameObject.GetComponent<PhotonView>())
                 {
                     var playerHitPhoton = hit.collider.gameObject.GetComponent<PhotonView>();
                     playerHitPhoton.RPC("TakeDamage", PhotonTargets.All);
                 }
+                
+                GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
+                clone.GetComponentInChildren<ParticleSystem>().startColor = Color.blue;
+                
             }
 
             _bullet.SetActive(false);

@@ -22,8 +22,8 @@ public class BulletNetworkMover : MonoBehaviour {
 
     public void Awake()
     {
-        PhotonNetwork.sendRate = 15;
-        PhotonNetwork.sendRateOnSerialize = 15;
+        PhotonNetwork.sendRate = 2;
+        PhotonNetwork.sendRateOnSerialize = 2;
 
     }
 
