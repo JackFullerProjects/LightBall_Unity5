@@ -59,7 +59,6 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
             Material gunColour = GetComponent<Player>().gunMaterials[GetComponent<Player>().ballIndex];
             stream.Serialize(ref pos);
             stream.Serialize(ref rot);
-            //stream.Serialize(ref gunColour);
         }
         // When receiving, buffer the information
         else
@@ -67,6 +66,7 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
             // Receive latest state information
             Vector3 pos = transform.position;
             Quaternion rot = Quaternion.identity;
+            Material gunColour = GetComponent<Player>().gunMaterials[GetComponent<Player>().ballIndex];
             stream.Serialize(ref pos);
             stream.Serialize(ref rot);
 

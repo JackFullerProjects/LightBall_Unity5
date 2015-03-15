@@ -68,6 +68,11 @@ public class ChatBox : Photon.MonoBehaviour
         GUILayout.EndArea();
     }
 
+    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+    }
+
+
     [RPC]
     public void Chat(string newLine, PhotonMessageInfo mi)
     {
