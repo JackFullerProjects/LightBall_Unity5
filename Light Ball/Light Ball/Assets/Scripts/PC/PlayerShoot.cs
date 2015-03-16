@@ -52,15 +52,6 @@ public class PlayerShoot : MonoBehaviour {
                 }
             }
         }
-        //else
-        //{
-        //    shootCooldown -= Time.deltaTime;
-        //    if (shootCooldown <= 0)
-        //    {
-        //        canFire = true;
-        //        shootCooldown = storeShootCooldown;
-        //    }
-        //}
 	
 	}
 

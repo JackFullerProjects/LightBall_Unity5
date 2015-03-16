@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class InterpolateNetworkMover : Photon.MonoBehaviour {
     
-   public double interpolationBackTime = 0.1;
+    public double interpolationBackTime = 0.1;
+
 
     internal struct State
     {
@@ -26,6 +28,13 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
 
         if (pv.isMine)
         {
+            PhotonNetwork.player.SetTeam(PunTeams.Team.red);
+            //foreach (var teamName in PunTeams.PlayersPerTeam.Keys)
+            //{
+            //    List<PhotonPlayer> teamPlayers = PunTeams.PlayersPerTeam[teamName];
+            //}
+            
+            
             GetComponent<RigidbodyFirstPersonController>().enabled = true;
             GetComponent<Player>().enabled = true;
             GetComponent<PlayerShoot>().enabled = true;
@@ -56,7 +65,6 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
         {
             Vector3 pos = transform.localPosition;
             Quaternion rot = transform.localRotation;
-            Material gunColour = GetComponent<Player>().gunMaterials[GetComponent<Player>().ballIndex];
             stream.Serialize(ref pos);
             stream.Serialize(ref rot);
         }
@@ -66,7 +74,6 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
             // Receive latest state information
             Vector3 pos = transform.position;
             Quaternion rot = Quaternion.identity;
-            Material gunColour = GetComponent<Player>().gunMaterials[GetComponent<Player>().ballIndex];
             stream.Serialize(ref pos);
             stream.Serialize(ref rot);
 
@@ -151,9 +158,4 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
         }
     }
 
-    [RPC]
-    public void TakeDamage()
-    {
-        LevelManager.RespawnPlayer(gameObject);
-    }
 }

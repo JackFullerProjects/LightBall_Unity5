@@ -36,6 +36,11 @@ public class Player : PlayerClass {
     public GameObject GunAnimation;
     public ParticleSystem gunParticle;
     public AnimationClip[] GunAnimationsArray;
+    private bool isReloading;
+    public int HealthDamage;
+    public int ArmourDamage;
+    private int Health = 100;
+    private int Armour = 100;
         
 
     void Start()
@@ -85,6 +90,16 @@ public class Player : PlayerClass {
                 playGunAnimationOnce = false;
             }
         }
+
+        if (isReloading)
+        {
+            if (!GunAnimation.GetComponent<Animation>().isPlaying)
+            {
+                GunAnimation.GetComponent<Animation>().clip = GunAnimationsArray[2];
+                GunAnimation.GetComponent<Animation>().Play();
+                isReloading = false;
+            }
+        }
     }
 
     private void UserInput()
@@ -96,6 +111,10 @@ public class Player : PlayerClass {
         }
     }
 
+    public void Reset()
+    {
+  
+    }
 
     #region Object Pooling
     //lists where pooled gameobjects in scene are stored
@@ -256,7 +275,7 @@ public class Player : PlayerClass {
                 if (hit.collider.gameObject.GetComponent<PhotonView>())
                 {
                     var playerHitPhoton = hit.collider.gameObject.GetComponent<PhotonView>();
-                    playerHitPhoton.RPC("TakeDamage", PhotonTargets.All);
+                    playerHitPhoton.RPC("TakeDamage", PhotonTargets.All, HealthDamage, ArmourDamage);
                 }
 
                 GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
@@ -269,7 +288,7 @@ public class Player : PlayerClass {
                 if(hit.collider.gameObject.GetComponent<PhotonView>())
                 {
                     var playerHitPhoton = hit.collider.gameObject.GetComponent<PhotonView>();
-                    playerHitPhoton.RPC("TakeDamage", PhotonTargets.All);
+                    playerHitPhoton.RPC("TakeDamage", PhotonTargets.All, HealthDamage, ArmourDamage);
                 }
                 
                 GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
@@ -277,6 +296,7 @@ public class Player : PlayerClass {
                 
             }
 
+            isReloading = true;
             _bullet.SetActive(false);
         }
     }
@@ -296,6 +316,27 @@ public class Player : PlayerClass {
     }
 
     #endregion 
+
+    #region Health and Armour
+    public void DoDamage(int _healthDam, int _armourDam)
+    {
+        if (Armour > 0)
+        {
+            Armour -= _armourDam;
+            GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Armour.text = "" + Armour;
+            return;
+        }
+
+        Health -= _healthDam;
+        GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Health.text = "" + Health;
+
+        if (Health <= 0)
+        {
+            Reset();
+            LevelManager.RespawnPlayer(gameObject);
+        }
+    }
+    #endregion
 
 
 

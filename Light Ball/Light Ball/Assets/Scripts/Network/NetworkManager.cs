@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class NetworkManager : MonoBehaviour {
 
@@ -13,6 +15,9 @@ public class NetworkManager : MonoBehaviour {
 	[SerializeField] InputField roomName;
 	[SerializeField] InputField roomList;
     [SerializeField] Text PlayerCount;
+    public Text Armour;
+    public Text Health;
+
 
     [SerializeField] GameObject playerHUD;
 
@@ -109,10 +114,26 @@ public class NetworkManager : MonoBehaviour {
 		                                   			 spawnPoints[spawnIndex].rotation,
 		                                             0);
 
+
         playerHUD.SetActive(true);
 
 		lobbyCamera.enabled = false;
+       
 
 	}
+
+    void OnGUI()
+    {
+        foreach (var teamName in PunTeams.PlayersPerTeam.Keys)
+        {
+            GUILayout.Label("Team: " + teamName.ToString());
+            List<PhotonPlayer> teamPlayers = PunTeams.PlayersPerTeam[teamName];
+
+            foreach (PhotonPlayer player in teamPlayers)
+            {
+                GUILayout.Label("  " + player.ToStringFull());
+            }
+        }
+    }
 
 }

@@ -110,6 +110,7 @@
      <Compile Include="Assets\Scripts\Network\BulletNetworkMover.cs" />
      <Compile Include="Assets\Scripts\Network\ChatBox.cs" />
      <Compile Include="Assets\Scripts\Network\InterpolateNetworkMover.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkGunColour.cs" />
      <Compile Include="Assets\Scripts\Network\NetworkManager.cs" />
      <Compile Include="Assets\Scripts\Network\PlayerNetworkMover.cs" />
      <Compile Include="Assets\Scripts\Network\RigibodyPlayerNetworkMover.cs" />
@@ -118,6 +119,7 @@
      <Compile Include="Assets\Scripts\PC\ControllerState.cs" />
      <Compile Include="Assets\Scripts\PC\FirstPersonController.cs" />
      <Compile Include="Assets\Scripts\PC\HeadBob.cs" />
+     <Compile Include="Assets\Scripts\PC\Health.cs" />
      <Compile Include="Assets\Scripts\PC\MouseLook.cs" />
      <Compile Include="Assets\Scripts\PC\Player.cs" />
      <Compile Include="Assets\Scripts\PC\PlayerClass.cs" />
