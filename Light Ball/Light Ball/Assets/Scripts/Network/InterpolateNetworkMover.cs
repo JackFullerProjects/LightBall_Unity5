@@ -60,6 +60,7 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
             }
         }
     }
+
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         // Always send transform (depending on reliability of the network view)

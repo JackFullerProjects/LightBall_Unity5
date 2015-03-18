@@ -105,6 +105,7 @@
      <Compile Include="Assets\Photon Unity Networking\UtilityScripts\SupportLogger.cs" />
      <Compile Include="Assets\Photon Unity Networking\UtilityScripts\TimeKeeper.cs" />
      <Compile Include="Assets\Scripts\BallBehaviours\StopOnCollision.cs" />
+     <Compile Include="Assets\Scripts\Effects\DestroyObject.cs" />
      <Compile Include="Assets\Scripts\Effects\DestroyParticle.cs" />
      <Compile Include="Assets\Scripts\Managers\LevelManager.cs" />
      <Compile Include="Assets\Scripts\Network\BulletNetworkMover.cs" />
@@ -118,6 +119,7 @@
      <Compile Include="Assets\Scripts\Network\SyncPlayer.cs" />
      <Compile Include="Assets\Scripts\PC\ControllerState.cs" />
      <Compile Include="Assets\Scripts\PC\FirstPersonController.cs" />
+     <Compile Include="Assets\Scripts\PC\FootPrint.cs" />
      <Compile Include="Assets\Scripts\PC\HeadBob.cs" />
      <Compile Include="Assets\Scripts\PC\Health.cs" />
      <Compile Include="Assets\Scripts\PC\MouseLook.cs" />
@@ -277,11 +279,11 @@
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
- <Reference Include="Photon3Unity3D">
- <HintPath>C:/Users/howard/Documents/GitHub/LightGun/LightBall_Unity5/Light Ball/Light Ball/Assets/Plugins/Photon3Unity3D.dll</HintPath>
- </Reference>
  <Reference Include="MKGlowSystem">
  <HintPath>C:/Users/howard/Documents/GitHub/LightGun/LightBall_Unity5/Light Ball/Light Ball/Assets/Additional Assets/Glow Package/_Internal/MKGlowSystem.dll</HintPath>
+ </Reference>
+ <Reference Include="Photon3Unity3D">
+ <HintPath>C:/Users/howard/Documents/GitHub/LightGun/LightBall_Unity5/Light Ball/Light Ball/Assets/Plugins/Photon3Unity3D.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>

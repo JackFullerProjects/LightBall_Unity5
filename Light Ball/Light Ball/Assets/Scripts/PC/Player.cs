@@ -40,8 +40,7 @@ public class Player : PlayerClass {
     public int HealthDamage;
     public int ArmourDamage;
     private int Health = 100;
-    private int Armour = 100;
-        
+    private int Armour = 100;      
 
     void Start()
     {
@@ -53,7 +52,6 @@ public class Player : PlayerClass {
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
         //initialise object pool
         InitPool(pooledAmount, lightBallPrefabs[0], lightBallPrefabs[1], lightBallPrefabs[2]);
 
@@ -115,6 +113,7 @@ public class Player : PlayerClass {
     {
   
     }
+
 
     #region Object Pooling
     //lists where pooled gameobjects in scene are stored
@@ -271,29 +270,25 @@ public class Player : PlayerClass {
             }
             else if (_bullet.name == "redBall(Clone)")
             {
+                GameObject clone = PhotonNetwork.Instantiate("RedBox", hitPoint,
+                                                        transform.rotation,
+                                                        0) as GameObject;
 
-                if (hit.collider.gameObject.GetComponent<PhotonView>())
-                {
-                    var playerHitPhoton = hit.collider.gameObject.GetComponent<PhotonView>();
-                    playerHitPhoton.RPC("TakeDamage", PhotonTargets.All, HealthDamage, ArmourDamage);
-                }
-
-                GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
-                clone.GetComponentInChildren<ParticleSystem>().startColor = Color.red;
-                
+                float _heightCorrection = clone.transform.localScale.y/2;
+                Vector3 _boxPos = hitPoint;
+                _boxPos.y += _heightCorrection;
+                clone.transform.position = _boxPos;
             }
             else if (_bullet.name == "blueBall(Clone)")
             {
+                GameObject clone = PhotonNetwork.Instantiate("BlueBox", hitPoint,
+                                                        transform.rotation,
+                                                        0) as GameObject;
 
-                if(hit.collider.gameObject.GetComponent<PhotonView>())
-                {
-                    var playerHitPhoton = hit.collider.gameObject.GetComponent<PhotonView>();
-                    playerHitPhoton.RPC("TakeDamage", PhotonTargets.All, HealthDamage, ArmourDamage);
-                }
-                
-                GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
-                clone.GetComponentInChildren<ParticleSystem>().startColor = Color.blue;
-                
+                float _heightCorrection = clone.transform.localScale.y / 2;
+                Vector3 _boxPos = hitPoint;
+                _boxPos.y += _heightCorrection;
+                clone.transform.position = _boxPos;
             }
 
             isReloading = true;
@@ -352,3 +347,13 @@ public class Player : PlayerClass {
       //      TopUpPool(10, false, true, false, false);
       //  else if (greenBalls.Count < 3)
       //      TopUpPool(10, false, false, true, false);
+
+
+    //if(hit.collider.gameObject.GetComponent<PhotonView>())
+    //            {
+    //                var playerHitPhoton = hit.collider.gameObject.GetComponent<PhotonView>();
+    //                playerHitPhoton.RPC("TakeDamage", PhotonTargets.All, HealthDamage, ArmourDamage);
+    //            }
+                
+    //            GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
+    //            clone.GetComponentInChildren<ParticleSystem>().startColor = Color.blue;
