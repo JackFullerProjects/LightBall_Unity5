@@ -36,4 +36,9 @@ public class Health : Photon.MonoBehaviour {
         
     }
 
+    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+
+    }
+
 }

@@ -29,10 +29,12 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
         if (pv.isMine)
         {
             PhotonNetwork.player.SetTeam(PunTeams.Team.red);
-            //foreach (var teamName in PunTeams.PlayersPerTeam.Keys)
-            //{
-            //    List<PhotonPlayer> teamPlayers = PunTeams.PlayersPerTeam[teamName];
-            //}
+
+            foreach (var teamName in PunTeams.PlayersPerTeam.Keys)
+            {
+                List<PhotonPlayer> teamPlayers = PunTeams.PlayersPerTeam[teamName];
+                Debug.Log("TEAM: " + teamName + "   Players: " + teamPlayers.Count);
+            }
             
             
             GetComponent<RigidbodyFirstPersonController>().enabled = true;
