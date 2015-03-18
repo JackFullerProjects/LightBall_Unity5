@@ -28,15 +28,23 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
 
         if (pv.isMine)
         {
-            PhotonNetwork.player.SetTeam(PunTeams.Team.red);
+            int _teamBlueCount = 0;
+            int _teamRedCount = 0;
 
             foreach (var teamName in PunTeams.PlayersPerTeam.Keys)
             {
                 List<PhotonPlayer> teamPlayers = PunTeams.PlayersPerTeam[teamName];
                 Debug.Log("TEAM: " + teamName + "   Players: " + teamPlayers.Count);
+
+                if (teamName == PunTeams.Team.red)
+                    _teamRedCount = teamPlayers.Count;
+                else if(teamName == PunTeams.Team.blue)
+                    _teamBlueCount = teamPlayers.Count;
+
             }
-            
-            
+
+            PhotonNetwork.player.SetTeam(PickTeam(_teamRedCount, _teamBlueCount));
+
             GetComponent<RigidbodyFirstPersonController>().enabled = true;
             GetComponent<Player>().enabled = true;
             GetComponent<PlayerShoot>().enabled = true;
@@ -61,9 +69,16 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
         }
     }
 
+    private PunTeams.Team PickTeam(int teamRedNum, int teamBlueNum)
+    {
+        if (teamBlueNum > teamRedNum)
+            return PunTeams.Team.red;
+        else 
+            return PunTeams.Team.blue;
+    }
+
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        // Always send transform (depending on reliability of the network view)
         if (stream.isWriting)
         {
             Vector3 pos = transform.localPosition;

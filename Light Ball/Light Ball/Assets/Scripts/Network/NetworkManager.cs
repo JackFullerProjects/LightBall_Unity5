@@ -118,6 +118,8 @@ public class NetworkManager : MonoBehaviour {
         playerHUD.SetActive(true);
 
 		lobbyCamera.enabled = false;
+
+            
        
 
 	}
