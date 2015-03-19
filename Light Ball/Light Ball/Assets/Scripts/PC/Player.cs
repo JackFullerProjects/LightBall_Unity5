@@ -13,7 +13,7 @@ public class Player : PlayerClass {
     [Header("Arrays Ball Colours must be the same")]
 	public GameObject[] lightBallPrefabs;
 	public string[] lightBallMode;
-    public Material[] gunMaterials;
+    public List<Material> gunMaterials = new List<Material>();
     public float whiteFirePower;
     public float otherBallFirePower;
     [HideInInspector]
@@ -40,7 +40,9 @@ public class Player : PlayerClass {
     public int HealthDamage;
     public int ArmourDamage;
     private int Health = 100;
-    private int Armour = 100;      
+    private int Armour = 100;
+
+    public PunTeams.Team team;
 
     void Start()
     {
@@ -52,8 +54,7 @@ public class Player : PlayerClass {
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        //initialise object pool
-        InitPool(pooledAmount, lightBallPrefabs[0], lightBallPrefabs[1], lightBallPrefabs[2]);
+        SetTeamLoadout(team);
 
     }
 
@@ -61,6 +62,25 @@ public class Player : PlayerClass {
     {
         UserInput();
         AnimationManager();
+    }
+
+    private void SetTeamLoadout(PunTeams.Team _playerTeam)
+    {
+        var objectPool = GameObject.Find("ObjectManager").GetComponent<ObjectBank>();
+        if (_playerTeam == PunTeams.Team.red)
+        {
+            gameObject.layer = 12;
+            gunMaterials.Add(objectPool.GunMaterials[0]);
+            gunMaterials.Add(objectPool.GunMaterials[1]);
+            GetComponent<FootPrint>().FootPrintName = "RedFootprint";
+        }
+        else if (_playerTeam == PunTeams.Team.blue)
+        {
+            gameObject.layer = 13;
+            gunMaterials.Add(objectPool.GunMaterials[0]);
+            gunMaterials.Add(objectPool.GunMaterials[2]);
+            GetComponent<FootPrint>().FootPrintName = "BlueFootprint";
+        }
     }
 
     private void AnimationManager()
@@ -115,78 +135,7 @@ public class Player : PlayerClass {
     }
 
 
-    #region Object Pooling
-    //lists where pooled gameobjects in scene are stored
-    protected List<GameObject> redBalls = new List<GameObject>();
-    protected List<GameObject> blueBalls = new List<GameObject>();
-    protected List<GameObject> whiteBalls = new List<GameObject>();
-    private int pooledAmount = 10;//amount of each object to pool
 
-    //method to initilise pool system must be called in start function and passed light ball prefab array elements
-    public void InitPool(int size, GameObject _white, GameObject _red, GameObject _blue)
-    {
-        Vector3 spawnPos = new Vector3(100, 100, 100);//object pool position
-
-        for (int i = 0; i < pooledAmount; i++)
-        {
-            GameObject obj = (GameObject)Instantiate(_white);
-            obj.transform.position = spawnPos;
-            whiteBalls.Add(obj);
-            obj.SetActive(false);
-        }
-
-        for (int i = 0; i < pooledAmount; i++)
-        {
-            GameObject obj = (GameObject)Instantiate(_red);
-            obj.transform.position = spawnPos;
-            redBalls.Add(obj);
-            obj.SetActive(false);
-        }
-        for (int i = 0; i < pooledAmount; i++)
-        {
-            GameObject obj = (GameObject)Instantiate(_blue);
-            obj.transform.position = spawnPos;
-            blueBalls.Add(obj);
-            obj.SetActive(false);
-        }
-    }
-
-    public void TopUpPool(int size, bool topUpWhite, bool topUpRed, bool topUpBlue)
-    {
-        Vector3 spawnPos = new Vector3(100, 100, 100);//object pool position
-
-        if(topUpWhite)
-        {
-            for (int i = 0; i < pooledAmount; i++)
-            {
-                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[0]);
-                obj.transform.position = spawnPos;
-                whiteBalls.Add(obj);
-                obj.SetActive(false);
-            }
-        }
-        else if (topUpRed)
-        {
-            for (int i = 0; i < pooledAmount; i++)
-            {
-                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[1]);
-                obj.transform.position = spawnPos;
-                redBalls.Add(obj);
-                obj.SetActive(false);
-            }
-        }
-        else if (topUpBlue)
-        {
-            for (int i = 0; i < pooledAmount; i++)
-            {
-                GameObject obj = (GameObject)Instantiate(lightBallPrefabs[3]);
-                obj.transform.position = spawnPos;
-                blueBalls.Add(obj);
-                obj.SetActive(false);
-            }
-        }
-    }
-    #endregion
 
     #region Light Ball Systems
 
@@ -197,7 +146,7 @@ public class Player : PlayerClass {
         currentlyChangingColour = true;
         ballIndex++;
         //dont let ball index got out of the array bounds
-        if (ballIndex > lightBallPrefabs.Length - 1)
+        if (ballIndex > gunMaterials.Count - 1)
             ballIndex = 0;
     }
 
@@ -211,104 +160,84 @@ public class Player : PlayerClass {
 
     #region Fire
 
-    //Call this method to fire a ball
     public void Fire()
-    {
-        GameObject _bullet;
-
-        switch (ballIndex)
-        {
-            case 0:
-
-                 _bullet = FetchFromPool(whiteBalls);
-                 ActivateBullet(_bullet);
-                 break;
-
-            case 1:
-
-                _bullet = FetchFromPool(redBalls);
-                ActivateBullet(_bullet);
-                break;
-
-            case 2:
-
-                _bullet = FetchFromPool(blueBalls);
-                ActivateBullet(_bullet);
-                break;
-
-        }
-
-    }
-
-    //Activate bullet will find a bullet in the pool and move it to the correct position ready to be fired
-    private void ActivateBullet(GameObject _bullet)
     {
         GunAnimation.GetComponent<Animation>().clip = GunAnimationsArray[1];
         GunAnimation.GetComponent<Animation>().Play();
-
-        _bullet.SetActive(true);//turn ball on
-        Vector3 bulletPos = gun.transform.TransformPoint(Vector3.forward);//Camera.main.transform.position;//set bullet position
-        _bullet.transform.position = bulletPos;
-        _bullet.transform.rotation = Camera.main.transform.rotation;
-        Rigidbody ballRigidbody = _bullet.GetComponent<Rigidbody>();
 
         //raycast from middle of camera to get where cursor is aiming
         Transform cam = Camera.main.transform;
         RaycastHit hit;
         Vector3 hitPoint;
 
-        if (Physics.Raycast(cam.position, cam.forward, out hit, 10000))
+        switch (ballIndex)
         {
-            hitPoint = hit.point;
 
-            if (_bullet.name == "whiteBall(Clone)")
-            {
-                GameObject clone = PhotonNetwork.Instantiate("whiteBall", bulletPos,
-                                                        _bullet.transform.rotation,
-                                                        0) as GameObject;
-                clone.transform.LookAt(hitPoint);//make projectile travel towards raycast hit point and where the reticle was aiming
-            }
-            else if (_bullet.name == "redBall(Clone)")
-            {
-                GameObject clone = PhotonNetwork.Instantiate("RedBox", hitPoint,
+            case 0 :
+                
+                if (Physics.Raycast(cam.position, cam.forward, out hit, 20000))
+                {
+                    hitPoint = hit.point;
+
+                    GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
+                    clone.GetComponentInChildren<ParticleSystem>().startColor = Color.white;
+
+                    var hitPlayerPhotonView = hit.collider.gameObject.GetComponent<PhotonView>();
+
+                    if (!hitPlayerPhotonView)
+                        return;
+
+                    hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, HealthDamage, ArmourDamage);
+                }
+
+            break;
+
+            case 1:
+
+                if (Physics.Raycast(cam.position, cam.forward, out hit, 20000))
+                {
+                    hitPoint = hit.point;
+
+                    if (team == PunTeams.Team.red)
+                    {
+                        float _BoxHeight = 2.5f;
+                        Vector3 _boxPos = hitPoint;
+                        _boxPos.y += _BoxHeight;
+  
+                        GameObject clone = PhotonNetwork.Instantiate("RedBox", _boxPos,
                                                         transform.rotation,
                                                         0) as GameObject;
 
-                float _heightCorrection = clone.transform.localScale.y/2;
-                Vector3 _boxPos = hitPoint;
-                _boxPos.y += _heightCorrection;
-                clone.transform.position = _boxPos;
-            }
-            else if (_bullet.name == "blueBall(Clone)")
-            {
-                GameObject clone = PhotonNetwork.Instantiate("BlueBox", hitPoint,
+                        //float _heightCorrection = clone.transform.localScale.y / 2;
+                        //Vector3 _boxPos = hitPoint;
+                        //_boxPos.y += _heightCorrection;
+                        //clone.transform.position = _boxPos;
+                    }
+                    else
+                    {
+                        float _BoxHeight = 2.5f;
+                        Vector3 _boxPos = hitPoint;
+                        _boxPos.y += _BoxHeight;
+
+                        GameObject clone = PhotonNetwork.Instantiate("BlueBox", _boxPos,
                                                         transform.rotation,
                                                         0) as GameObject;
 
-                float _heightCorrection = clone.transform.localScale.y / 2;
-                Vector3 _boxPos = hitPoint;
-                _boxPos.y += _heightCorrection;
-                clone.transform.position = _boxPos;
-            }
+                        //float _heightCorrection = clone.transform.localScale.y / 2;
+                        //Vector3 _boxPos = hitPoint;
+                        //_boxPos.y += _heightCorrection;
+                        //clone.transform.position = _boxPos;
+                    }
+                }
 
-            isReloading = true;
-            _bullet.SetActive(false);
+            break;
         }
+
+        isReloading = true;
     }
 
 
-    private GameObject FetchFromPool(List<GameObject> pool)
-    {
-        for (int i = 0; i < pool.Count; i++)
-        {
-            if (!pool[i].activeInHierarchy)
-            {
-                return pool[i].gameObject;
-            }
-        }
 
-        return null;
-    }
 
     #endregion 
 
@@ -357,3 +286,171 @@ public class Player : PlayerClass {
                 
     //            GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
     //            clone.GetComponentInChildren<ParticleSystem>().startColor = Color.blue;
+
+
+
+//#region Object Pooling
+////lists where pooled gameobjects in scene are stored
+//protected List<GameObject> redBalls = new List<GameObject>();
+//protected List<GameObject> blueBalls = new List<GameObject>();
+//protected List<GameObject> whiteBalls = new List<GameObject>();
+//private int pooledAmount = 10;//amount of each object to pool
+
+////method to initilise pool system must be called in start function and passed light ball prefab array elements
+//public void InitPool(int size, GameObject _white, GameObject _red, GameObject _blue)
+//{
+//    Vector3 spawnPos = new Vector3(100, 100, 100);//object pool position
+
+//    for (int i = 0; i < pooledAmount; i++)
+//    {
+//        GameObject obj = (GameObject)Instantiate(_white);
+//        obj.transform.position = spawnPos;
+//        whiteBalls.Add(obj);
+//        obj.SetActive(false);
+//    }
+
+//    for (int i = 0; i < pooledAmount; i++)
+//    {
+//        GameObject obj = (GameObject)Instantiate(_red);
+//        obj.transform.position = spawnPos;
+//        redBalls.Add(obj);
+//        obj.SetActive(false);
+//    }
+//    for (int i = 0; i < pooledAmount; i++)
+//    {
+//        GameObject obj = (GameObject)Instantiate(_blue);
+//        obj.transform.position = spawnPos;
+//        blueBalls.Add(obj);
+//        obj.SetActive(false);
+//    }
+//}
+
+//public void TopUpPool(int size, bool topUpWhite, bool topUpRed, bool topUpBlue)
+//{
+//    Vector3 spawnPos = new Vector3(100, 100, 100);//object pool position
+
+//    if(topUpWhite)
+//    {
+//        for (int i = 0; i < pooledAmount; i++)
+//        {
+//            GameObject obj = (GameObject)Instantiate(lightBallPrefabs[0]);
+//            obj.transform.position = spawnPos;
+//            whiteBalls.Add(obj);
+//            obj.SetActive(false);
+//        }
+//    }
+//    else if (topUpRed)
+//    {
+//        for (int i = 0; i < pooledAmount; i++)
+//        {
+//            GameObject obj = (GameObject)Instantiate(lightBallPrefabs[1]);
+//            obj.transform.position = spawnPos;
+//            redBalls.Add(obj);
+//            obj.SetActive(false);
+//        }
+//    }
+//    else if (topUpBlue)
+//    {
+//        for (int i = 0; i < pooledAmount; i++)
+//        {
+//            GameObject obj = (GameObject)Instantiate(lightBallPrefabs[3]);
+//            obj.transform.position = spawnPos;
+//            blueBalls.Add(obj);
+//            obj.SetActive(false);
+//        }
+//    }
+//}
+//#endregion
+
+
+
+////Call this method to fire a ball
+//public void Fire()
+//{
+//    GameObject _bullet;
+
+//    switch (ballIndex)
+//    {
+//        case 0:
+
+//             _bullet = FetchFromPool(whiteBalls);
+//             ActivateBullet(_bullet);
+//             break;
+
+//        case 1:
+
+//            _bullet = FetchFromPool(redBalls);
+//            ActivateBullet(_bullet);
+//            break;
+
+//        case 2:
+
+//            _bullet = FetchFromPool(blueBalls);
+//            ActivateBullet(_bullet);
+//            break;
+
+//    }
+
+//}
+
+////Activate bullet will find a bullet in the pool and move it to the correct position ready to be fired
+//private void ActivateBullet(GameObject _bullet)
+//{
+
+
+//    _bullet.SetActive(true);//turn ball on
+//    Vector3 bulletPos = gun.transform.TransformPoint(Vector3.forward);//Camera.main.transform.position;//set bullet position
+//    _bullet.transform.position = bulletPos;
+//    _bullet.transform.rotation = Camera.main.transform.rotation;
+//    Rigidbody ballRigidbody = _bullet.GetComponent<Rigidbody>();
+
+//    //raycast from middle of camera to get where cursor is aiming
+//    Transform cam = Camera.main.transform;
+//    RaycastHit hit;
+//    Vector3 hitPoint;
+
+//    if (Physics.Raycast(cam.position, cam.forward, out hit, 20000))
+//    {
+//        hitPoint = hit.point;
+
+//        if (_bullet.name == "whiteBall(Clone)")
+//        {
+//            GameObject clone = PhotonNetwork.Instantiate("whiteBall", bulletPos,
+//                                                    _bullet.transform.rotation,
+//                                                    0) as GameObject;
+//            clone.transform.LookAt(hitPoint);//make projectile travel towards raycast hit point and where the reticle was aiming
+//        }
+//        else if (_bullet.name == "redBall(Clone)")
+//        {
+
+//        }
+//        else if (_bullet.name == "blueBall(Clone)")
+//        {
+//            GameObject clone = PhotonNetwork.Instantiate("BlueBox", hitPoint,
+//                                                    transform.rotation,
+//                                                    0) as GameObject;
+
+//            float _heightCorrection = clone.transform.localScale.y / 2;
+//            Vector3 _boxPos = hitPoint;
+//            _boxPos.y += _heightCorrection;
+//            clone.transform.position = _boxPos;
+//        }
+
+//        isReloading = true;
+//        _bullet.SetActive(false);
+//    }
+//}
+
+
+//private GameObject FetchFromPool(List<GameObject> pool)
+//{
+//    for (int i = 0; i < pool.Count; i++)
+//    {
+//        if (!pool[i].activeInHierarchy)
+//        {
+//            return pool[i].gameObject;
+//        }
+//    }
+
+//    return null;
+//}

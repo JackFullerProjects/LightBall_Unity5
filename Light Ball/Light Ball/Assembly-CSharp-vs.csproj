@@ -108,7 +108,9 @@
      <Compile Include="Assets\Scripts\Effects\DestroyObject.cs" />
      <Compile Include="Assets\Scripts\Effects\DestroyParticle.cs" />
      <Compile Include="Assets\Scripts\Effects\ReverseNormals.cs" />
+     <Compile Include="Assets\Scripts\Effects\RotationFix.cs" />
      <Compile Include="Assets\Scripts\Managers\LevelManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\ObjectBank.cs" />
      <Compile Include="Assets\Scripts\Network\BulletNetworkMover.cs" />
      <Compile Include="Assets\Scripts\Network\ChatBox.cs" />
      <Compile Include="Assets\Scripts\Network\InterpolateNetworkMover.cs" />

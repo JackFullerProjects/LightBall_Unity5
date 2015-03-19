@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DestroyParticle : MonoBehaviour {
+public class DestroyParticle : Photon.MonoBehaviour {
 
 	
 	// Update is called once per frame
 	void Update () 
     {
         if (!GetComponentInChildren<ParticleSystem>().isPlaying)
-            Destroy(gameObject);
+            PhotonNetwork.Destroy(gameObject);
+            
 	}
 }

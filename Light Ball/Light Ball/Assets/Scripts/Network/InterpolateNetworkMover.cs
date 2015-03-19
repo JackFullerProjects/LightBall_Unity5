@@ -14,10 +14,7 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
         internal Quaternion rot;
     }
 
-    // We store twenty states with "playback" information
     State[] m_BufferedState = new State[20];
-
-    // Keep track of what slots are used
     int m_TimestampCount;
 
     private PhotonView pv;
@@ -49,6 +46,7 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
             GetComponent<Player>().enabled = true;
             GetComponent<PlayerShoot>().enabled = true;
             GetComponent<Rigidbody>().useGravity = true;
+            GetComponent<FootPrint>().enabled = true;
             GetComponent<Player>().GunAnimation.GetComponent<Animation>().enabled = true;
 
             foreach (Transform child in transform)
@@ -72,9 +70,17 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
     private PunTeams.Team PickTeam(int teamRedNum, int teamBlueNum)
     {
         if (teamBlueNum > teamRedNum)
+        {
+            var playerScript = GetComponent<Player>();
+            playerScript.team = PunTeams.Team.red;
             return PunTeams.Team.red;
-        else 
+        }
+        else
+        {
+            var playerScript = GetComponent<Player>();
+            playerScript.team = PunTeams.Team.blue;
             return PunTeams.Team.blue;
+        }
     }
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -86,10 +92,8 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
             stream.Serialize(ref pos);
             stream.Serialize(ref rot);
         }
-        // When receiving, buffer the information
         else
         {
-            // Receive latest state information
             Vector3 pos = transform.position;
             Quaternion rot = Quaternion.identity;
             stream.Serialize(ref pos);
@@ -132,11 +136,8 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
             double interpolationTime = currentTime - interpolationBackTime;
             // We have a window of interpolationBackTime where we basically play
             // By having interpolationBackTime the average ping, you will usually use interpolation.
-            // And only if no more data arrives we will use extrapolation
 
             // Use interpolation
-            // Check if latest state exceeds interpolation time, if this is the case then
-            // it is too old and extrapolation should be used
             if (m_BufferedState[0].timestamp > interpolationTime)
             {
                 for (int i = 0; i < m_TimestampCount; i++)
@@ -150,23 +151,18 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
                         // The best playback state (closest to 100 ms old (default time))
                         State lhs = m_BufferedState[i];
 
-                        // Use the time between the two slots to determine if interpolation is necessary
                         double length = rhs.timestamp - lhs.timestamp;
                         float t = 0.0F;
-                        // As the time difference gets closer to 100 ms t gets closer to 1 in
-                        // which case rhs is only used
+
                         if (length > 0.0001)
                             t = (float)((interpolationTime - lhs.timestamp) / length);
 
-                        // if t=0 => lhs is used directly
                         transform.localPosition = Vector3.Lerp(lhs.pos, rhs.pos, t);
                         transform.localRotation = Quaternion.Slerp(lhs.rot, rhs.rot, t);
                         return;
                     }
                 }
             }
-            // Use extrapolation. Here we do something really simple and just repeat the last
-            // received state. You can do clever stuff with predicting what should happen.
             else
             {
                 State latest = m_BufferedState[0];

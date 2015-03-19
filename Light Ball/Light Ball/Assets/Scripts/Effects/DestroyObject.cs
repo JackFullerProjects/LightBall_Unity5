@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DestroyObject : MonoBehaviour {
+public class DestroyObject : Photon.MonoBehaviour {
 
     public float DestroyTime;
 
     void Start()
     {
-        Destroy(gameObject, DestroyTime);
+        PhotonView.Destroy(gameObject, DestroyTime);
     }
 }

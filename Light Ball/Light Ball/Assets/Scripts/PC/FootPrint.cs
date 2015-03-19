@@ -8,6 +8,8 @@ public class FootPrint : Photon.MonoBehaviour {
     private float droptime_Time;
 
     private float distanceToGround;
+
+    public string FootPrintName;
 	// Use this for initialization
 	void Start ()
     {
@@ -31,14 +33,12 @@ public class FootPrint : Photon.MonoBehaviour {
             if (droptime_Time < Time.realtimeSinceStartup)
             {
                 float yCorrection = transform.localScale.y / 2;
-                Vector3 rotationFix = new Vector3(270f, 0f, 0f);
-                Vector3 footPrintPos = transform.position + transform.forward + Vector3.up * .14f;
+                Vector3 footPrintPos = transform.position + (transform.forward * 1.5f);
                 footPrintPos.y -= yCorrection;
 
-                GameObject clone = PhotonNetwork.Instantiate("BlueFootprint", footPrintPos,
-                                                                transform.rotation,
+                GameObject clone = PhotonNetwork.Instantiate(FootPrintName, footPrintPos,
+                                                               transform.rotation,
                                                                 0) as GameObject;
-                clone.transform.eulerAngles = rotationFix;
                 droptime_Time = DropTime + Time.realtimeSinceStartup;
             }
         }
