@@ -187,7 +187,10 @@ public class Player : PlayerClass {
                     if (!hitPlayerPhotonView)
                         return;
 
-                    hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, HealthDamage, ArmourDamage);
+                    if (hit.collider.gameObject.tag == "Player")
+                    {
+                        hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, HealthDamage, ArmourDamage);
+                    }
                 }
 
             break;
