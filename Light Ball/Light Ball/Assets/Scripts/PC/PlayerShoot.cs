@@ -40,7 +40,7 @@ public class PlayerShoot : MonoBehaviour {
             }
             else
             {
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButton(0) && canFire)
                 {
                     if (!GetComponent<Player>().GunAnimation.GetComponent<Animation>().isPlaying)
                     {
