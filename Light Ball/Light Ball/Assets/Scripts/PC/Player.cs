@@ -8,6 +8,8 @@ public class Player : PlayerClass {
     //Header("Controller Bool")]
     private bool useController;
 	PlayerData playerData = new PlayerData(100, 100, 100, 0);
+    [Header("Controller States Hold Input Device")]
+    public ControllerState controllerstate;
 
     [Header("Ball Variables")]
     [Header("Arrays Ball Colours must be the same")]
@@ -46,7 +48,7 @@ public class Player : PlayerClass {
 
     void Start()
     {
-        ControllerState controllerstate = GetComponent<ControllerState>();
+        
         if (controllerstate.inputDevice == ControllerState.InputState.Keyboard)
             useController = false;
         else
@@ -97,13 +99,16 @@ public class Player : PlayerClass {
             }
             if (!GunAnimation.GetComponent<Animation>().isPlaying)
             {
-                Material[] _gunMats = gunCylinder2.GetComponent<MeshRenderer>().materials;
-                _gunMats[1] = gunMaterials[ballIndex];
-                gunCylinder2.GetComponent<MeshRenderer>().materials = _gunMats;
+                if (gunCylinder2.GetComponent<MeshRenderer>().enabled == true)
+                {
+                    Material[] _gunMats = gunCylinder2.GetComponent<MeshRenderer>().materials;
+                    _gunMats[1] = gunMaterials[ballIndex];
+                    gunCylinder2.GetComponent<MeshRenderer>().materials = _gunMats;
 
-                _gunMats = gunCylinder1.GetComponent<MeshRenderer>().materials;
-                _gunMats[0] = gunMaterials[ballIndex];
-                gunCylinder1.GetComponent<MeshRenderer>().materials = _gunMats;
+                    _gunMats = gunCylinder1.GetComponent<MeshRenderer>().materials;
+                    _gunMats[0] = gunMaterials[ballIndex];
+                    gunCylinder1.GetComponent<MeshRenderer>().materials = _gunMats;
+                }
                 StartCoroutine(ChangeCooldown(changeCooldown));
                 currentlyChangingColour = false;
                 canChangeColour = true;
