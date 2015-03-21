@@ -209,6 +209,7 @@
      <None Include="Assets\Additional Assets\Glow Package\_Shader\_MKBase\Particles\MK_Particles-Blend.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\GlobalFog.shader" />
      <None Include="Assets\Standard Assets\Effects\ToonShading\Shaders\ToonLitOutline.shader" />
+     <None Include="Assets\ZFS_Shaders\Shaders\ZFS_3D_Pro.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch\Luminance.shader" />
      <None Include="Assets\Standard Assets\Effects\ToonShading\Shaders\ToonLit.shader" />
      <None Include="Assets\Additional Assets\Glow Package\_Shader\_MKGlowEffect\MKGlowFastBlur.shader" />

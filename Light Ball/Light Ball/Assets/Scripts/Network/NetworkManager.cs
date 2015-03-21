@@ -108,21 +108,14 @@ public class NetworkManager : MonoBehaviour {
 	{
 		yield return new WaitForSeconds(_respawnTime);
 
-		int spawnIndex = Random.Range(0, spawnPoints.Length);
-
-		player = PhotonNetwork.Instantiate("PlayerRB", spawnPoints[spawnIndex].position,
-		                                   			 spawnPoints[spawnIndex].rotation,
+		player = PhotonNetwork.Instantiate("PlayerRB", transform.position,
+		                                   			 transform.rotation,
 		                                             0);
-
 
         playerHUD.SetActive(true);
 
 		lobbyCamera.enabled = false;
-
-            
-       
-
-	}
+    }
 
     void OnGUI()
     {

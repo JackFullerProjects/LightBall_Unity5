@@ -109,10 +109,12 @@
      <Compile Include="Assets\Scripts\Effects\DestroyParticle.cs" />
      <Compile Include="Assets\Scripts\Effects\ReverseNormals.cs" />
      <Compile Include="Assets\Scripts\Effects\RotationFix.cs" />
+     <Compile Include="Assets\Scripts\InGame\ForceFieldHealth.cs" />
      <Compile Include="Assets\Scripts\Managers\LevelManager.cs" />
      <Compile Include="Assets\Scripts\Managers\ObjectBank.cs" />
      <Compile Include="Assets\Scripts\Network\BulletNetworkMover.cs" />
      <Compile Include="Assets\Scripts\Network\ChatBox.cs" />
+     <Compile Include="Assets\Scripts\Network\GrowForceFields.cs" />
      <Compile Include="Assets\Scripts\Network\InterpolateNetworkMover.cs" />
      <Compile Include="Assets\Scripts\Network\NetworkGunColour.cs" />
      <Compile Include="Assets\Scripts\Network\NetworkManager.cs" />
@@ -210,6 +212,7 @@
      <None Include="Assets\Additional Assets\Glow Package\_Shader\_MKBase\Particles\MK_Particles-Blend.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\GlobalFog.shader" />
      <None Include="Assets\Standard Assets\Effects\ToonShading\Shaders\ToonLitOutline.shader" />
+     <None Include="Assets\ZFS_Shaders\Shaders\ZFS_3D_Pro.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\Contrast Stretch\Luminance.shader" />
      <None Include="Assets\Standard Assets\Effects\ToonShading\Shaders\ToonLit.shader" />
      <None Include="Assets\Additional Assets\Glow Package\_Shader\_MKGlowEffect\MKGlowFastBlur.shader" />

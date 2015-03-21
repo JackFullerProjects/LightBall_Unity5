@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class LevelManager : MonoBehaviour {
+public class LevelManager : Photon.MonoBehaviour {
+
+    public static GameObject[] blueSpawns;
+    public static GameObject[] redSpawns;
 
     [System.Serializable]
     public class Teams
@@ -17,12 +20,34 @@ public class LevelManager : MonoBehaviour {
     public List<Teams> li_Teams = new List<Teams>();
 
 
+    void Start()
+    {
+        blueSpawns = GameObject.FindGameObjectsWithTag("BlueSpawn");
+        redSpawns = GameObject.FindGameObjectsWithTag("RedSpawn");
+    }
+
 
 
     public static void RespawnPlayer(GameObject _PlayerToRespawn)
     {
-        GameObject[] spawns = GameObject.FindGameObjectsWithTag("Respawn");
-        _PlayerToRespawn.transform.position = spawns[ChooseSpawn(0, spawns.Length)].transform.position;
+        Player player = _PlayerToRespawn.GetComponent<Player>();
+       
+        if (player.team == PunTeams.Team.red)
+        {
+            int spawnIndex = ChooseSpawn(0, redSpawns.Length - 1);
+            _PlayerToRespawn.transform.position = redSpawns[spawnIndex].transform.position;
+            _PlayerToRespawn.transform.rotation = redSpawns[spawnIndex].transform.rotation;
+        }
+        else if (player.team == PunTeams.Team.blue)
+        {
+            int spawnIndex = ChooseSpawn(0, blueSpawns.Length - 1);
+            _PlayerToRespawn.transform.position = blueSpawns[spawnIndex].transform.position;
+            _PlayerToRespawn.transform.rotation = redSpawns[spawnIndex].transform.rotation;
+        }
+        else
+        {
+            Debug.Log("SPAWN ERROR: No Team Assigned");
+        }
     }
 
     public static int ChooseSpawn(int min, int max)

@@ -31,7 +31,7 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
             foreach (var teamName in PunTeams.PlayersPerTeam.Keys)
             {
                 List<PhotonPlayer> teamPlayers = PunTeams.PlayersPerTeam[teamName];
-                Debug.Log("TEAM: " + teamName + "   Players: " + teamPlayers.Count);
+                //Debug.Log("TEAM: " + teamName + "   Players: " + teamPlayers.Count);
 
                 if (teamName == PunTeams.Team.red)
                     _teamRedCount = teamPlayers.Count;

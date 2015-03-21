@@ -7,7 +7,7 @@ public class Player : PlayerClass {
 
     //Header("Controller Bool")]
     private bool useController;
-	PlayerData playerData = new PlayerData(100, 100, 0);
+	PlayerData playerData = new PlayerData(100, 100, 100, 0);
 
     [Header("Ball Variables")]
     [Header("Arrays Ball Colours must be the same")]
@@ -39,8 +39,7 @@ public class Player : PlayerClass {
     private bool isReloading;
     public int HealthDamage;
     public int ArmourDamage;
-    private int Health = 100;
-    private int Armour = 100;
+    public int ForceFieldDamage;
 
     public PunTeams.Team team;
 
@@ -55,6 +54,7 @@ public class Player : PlayerClass {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         SetTeamLoadout(team);
+        LevelManager.RespawnPlayer(gameObject);
 
     }
 
@@ -184,6 +184,21 @@ public class Player : PlayerClass {
 
                     var hitPlayerPhotonView = hit.collider.gameObject.GetComponent<PhotonView>();
 
+                    if (hit.collider.gameObject.tag == "ForceFieldRed" && team != PunTeams.Team.red)
+                    {
+                        hitPlayerPhotonView = hit.collider.gameObject.transform.parent.GetComponent<PhotonView>();
+
+                        if (hitPlayerPhotonView != null)
+                               hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, ForceFieldDamage);
+                    }
+                    else if (hit.collider.gameObject.tag == "ForceFieldBlue" && team != PunTeams.Team.blue)
+                    {
+                        hitPlayerPhotonView = hit.collider.gameObject.transform.parent.GetComponent<PhotonView>();
+
+                        if(hitPlayerPhotonView != null)
+                            hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, ForceFieldDamage);
+                    }
+
                     if (!hitPlayerPhotonView)
                         return;
 
@@ -191,6 +206,7 @@ public class Player : PlayerClass {
                     {
                         hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, HealthDamage, ArmourDamage);
                     }
+                   
                 }
 
             break;
@@ -203,11 +219,11 @@ public class Player : PlayerClass {
 
                     if (team == PunTeams.Team.red)
                     {
-                        float _BoxHeight = 2.5f;
+                        float _BoxHeight = 0.5f;
                         Vector3 _boxPos = hitPoint;
                         _boxPos.y += _BoxHeight;
-  
-                        GameObject clone = PhotonNetwork.Instantiate("RedBox", _boxPos,
+
+                        GameObject clone = PhotonNetwork.Instantiate("ForceFieldRed", _boxPos,
                                                         transform.rotation,
                                                         0) as GameObject;
 
@@ -218,11 +234,11 @@ public class Player : PlayerClass {
                     }
                     else
                     {
-                        float _BoxHeight = 2.5f;
+                        float _BoxHeight = 0.5f;
                         Vector3 _boxPos = hitPoint;
                         _boxPos.y += _BoxHeight;
 
-                        GameObject clone = PhotonNetwork.Instantiate("BlueBox", _boxPos,
+                        GameObject clone = PhotonNetwork.Instantiate("ForceFieldBlue", _boxPos,
                                                         transform.rotation,
                                                         0) as GameObject;
 
@@ -247,17 +263,17 @@ public class Player : PlayerClass {
     #region Health and Armour
     public void DoDamage(int _healthDam, int _armourDam)
     {
-        if (Armour > 0)
+        if (playerData.armour > 0)
         {
-            Armour -= _armourDam;
-            GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Armour.text = "" + Armour;
+            playerData.armour -= _armourDam;
+            GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Armour.text = "" + playerData.armour;
             return;
         }
 
-        Health -= _healthDam;
-        GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Health.text = "" + Health;
+        playerData.health -= _healthDam;
+        GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Health.text = "" + playerData.health;
 
-        if (Health <= 0)
+        if (playerData.health <= 0)
         {
             Reset();
             LevelManager.RespawnPlayer(gameObject);

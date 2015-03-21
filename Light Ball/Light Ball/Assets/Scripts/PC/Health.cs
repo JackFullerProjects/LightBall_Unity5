@@ -18,6 +18,7 @@ public class Health : Photon.MonoBehaviour {
         }
 
         HP -= _healthDamage;
+
         if (GetComponent<PhotonView>().isMine)
             GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Health.text = "" + HP;
 
