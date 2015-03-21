@@ -40,6 +40,7 @@ public class Player : PlayerClass {
     public int HealthDamage;
     public int ArmourDamage;
     public int ForceFieldDamage;
+    public LayerMask layerMask;
 
     public PunTeams.Team team;
 
@@ -51,8 +52,6 @@ public class Player : PlayerClass {
         else
             useController = true;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
         SetTeamLoadout(team);
         LevelManager.RespawnPlayer(gameObject);
 
@@ -60,6 +59,9 @@ public class Player : PlayerClass {
 
     void Update()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         UserInput();
         AnimationManager();
     }
@@ -175,7 +177,7 @@ public class Player : PlayerClass {
 
             case 0 :
                 
-                if (Physics.Raycast(cam.position, cam.forward, out hit, 20000))
+                if (Physics.Raycast(cam.position, cam.forward, out hit, 20000, layerMask))
                 {
                     hitPoint = hit.point;
 
@@ -184,14 +186,14 @@ public class Player : PlayerClass {
 
                     var hitPlayerPhotonView = hit.collider.gameObject.GetComponent<PhotonView>();
 
-                    if (hit.collider.gameObject.tag == "ForceFieldRed" && team != PunTeams.Team.red)
+                    if (hit.collider.gameObject.transform.parent.tag == "ForceFieldRed" && team != PunTeams.Team.red)
                     {
                         hitPlayerPhotonView = hit.collider.gameObject.transform.parent.GetComponent<PhotonView>();
 
                         if (hitPlayerPhotonView != null)
                                hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, ForceFieldDamage);
                     }
-                    else if (hit.collider.gameObject.tag == "ForceFieldBlue" && team != PunTeams.Team.blue)
+                    else if (hit.collider.gameObject.transform.parent.tag == "ForceFieldBlue" && team != PunTeams.Team.blue)
                     {
                         hitPlayerPhotonView = hit.collider.gameObject.transform.parent.GetComponent<PhotonView>();
 

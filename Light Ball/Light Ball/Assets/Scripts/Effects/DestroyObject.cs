@@ -5,8 +5,11 @@ public class DestroyObject : Photon.MonoBehaviour {
 
     public float DestroyTime;
 
-    void Start()
+    void Update()
     {
-        PhotonView.Destroy(gameObject, DestroyTime);
+        DestroyTime -= Time.deltaTime;
+
+        if(DestroyTime <= 0)
+            PhotonNetwork.Destroy(gameObject);
     }
 }

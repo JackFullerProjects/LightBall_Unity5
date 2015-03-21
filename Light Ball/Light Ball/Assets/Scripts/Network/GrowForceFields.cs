@@ -8,7 +8,7 @@ public class GrowForceFields : Photon.MonoBehaviour {
     public float lerpTime = 1f;
     float currentLerpTime;
     Vector3 startScale = new Vector3(0.1f,0.1f,0.1f);
-    Vector3 endScale = new Vector3(1f,1f,1f);
+    public Vector3 endScale;
 
     void Start()
     {

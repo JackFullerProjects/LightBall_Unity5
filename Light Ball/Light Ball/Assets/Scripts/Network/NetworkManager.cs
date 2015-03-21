@@ -73,7 +73,6 @@ public class NetworkManager : MonoBehaviour {
 	void OnReceivedRoomListUpdate()
 	{
 		RoomInfo[] rooms = PhotonNetwork.GetRoomList();
-		Debug.Log(rooms.Length);
 
 		foreach(RoomInfo room in rooms)
 		{
