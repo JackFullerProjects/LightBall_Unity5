@@ -15,6 +15,8 @@ public class NetworkManager : MonoBehaviour {
 	[SerializeField] InputField roomName;
 	[SerializeField] InputField roomList;
     [SerializeField] Text PlayerCount;
+    [SerializeField] GameObject JoinGame;
+    [SerializeField] GameObject PleaseWait;
     public Text Armour;
     public Text Health;
 
@@ -67,6 +69,8 @@ public class NetworkManager : MonoBehaviour {
 	void OnJoinedLobby()
 	{
 		serverWindow.SetActive(true);
+        PleaseWait.SetActive(false);
+        JoinGame.SetActive(true);
 
 	}
 
