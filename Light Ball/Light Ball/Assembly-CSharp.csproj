@@ -114,6 +114,7 @@
      <Compile Include="Assets\Scripts\Effects\RotationFix.cs" />
      <Compile Include="Assets\Scripts\InGame\ForceFieldDetectPlayer.cs" />
      <Compile Include="Assets\Scripts\InGame\ForceFieldHealth.cs" />
+     <Compile Include="Assets\Scripts\InGame\PlayersInForceField.cs" />
      <Compile Include="Assets\Scripts\Managers\LevelManager.cs" />
      <Compile Include="Assets\Scripts\Managers\ObjectBank.cs" />
      <Compile Include="Assets\Scripts\Network\BulletNetworkMover.cs" />

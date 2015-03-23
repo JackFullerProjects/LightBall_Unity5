@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class ForceFieldDetectPlayer : Photon.MonoBehaviour {
 
-    public List<GameObject> playersInField = new List<GameObject>();
 
     void OnTriggerStay(Collider other)
     {
@@ -13,17 +12,17 @@ public class ForceFieldDetectPlayer : Photon.MonoBehaviour {
         if (!playerVisibleScript)
             return;
 
-    
+        var forceFieldClass = transform.parent.GetComponent<ForceFieldHealth>();
         playerVisibleScript.ForceFieldInside = gameObject;
         playerVisibleScript.TurnVisible();
 
-        for (int i = 0; i < playersInField.Count; i++)
+        for (int i = 0; i < forceFieldClass.ForceFieldClass.PlayersInField.Count; i++)
         {
-            if (other.gameObject == playersInField[i].gameObject)
+            if (other.gameObject == forceFieldClass.ForceFieldClass.PlayersInField[i].gameObject)
                 return;
         }
 
-        playersInField.Add(other.gameObject);
+        forceFieldClass.ForceFieldClass.PlayersInField.Add(other.gameObject);
     }
 
     void OnTriggerExit(Collider other)
@@ -33,7 +32,16 @@ public class ForceFieldDetectPlayer : Photon.MonoBehaviour {
         if (!playerVisibleScript)
             return;
 
+        var forceFieldClass = transform.parent.GetComponent<ForceFieldHealth>();
         playerVisibleScript.ForceFieldInside = null;
         playerVisibleScript.TurnInvisible();
+
+        for (int i = 0; i < forceFieldClass.ForceFieldClass.PlayersInField.Count; i++)
+        {
+            if (other.gameObject == forceFieldClass.ForceFieldClass.PlayersInField[i].gameObject)
+                forceFieldClass.ForceFieldClass.PlayersInField.Remove(other.gameObject);
+        }
+
+        
     }
 }
