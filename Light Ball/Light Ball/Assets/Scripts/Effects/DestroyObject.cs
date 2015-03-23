@@ -9,7 +9,19 @@ public class DestroyObject : Photon.MonoBehaviour {
     {
         DestroyTime -= Time.deltaTime;
 
-        if(DestroyTime <= 0)
-            PhotonNetwork.Destroy(gameObject);
+        if (DestroyTime <= 0)
+        {
+            if (GetComponent<PhotonView>().instantiationId == 0)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                if (PhotonNetwork.isMasterClient)
+                {
+                    PhotonNetwork.Destroy(gameObject);
+                }
+            }
+        }
     }
 }

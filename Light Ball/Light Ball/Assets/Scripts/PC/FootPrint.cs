@@ -33,10 +33,12 @@ public class FootPrint : Photon.MonoBehaviour {
             if (droptime_Time < Time.realtimeSinceStartup)
             {
                 float yCorrection = transform.localScale.y / 2;
-                Vector3 footPrintPos = transform.position + (transform.forward * 1.5f);
-                footPrintPos.y -= yCorrection;
+                Vector3 movementVel = playerRigidbody.velocity;
 
-                GameObject clone = PhotonNetwork.Instantiate(FootPrintName, footPrintPos,
+                Vector3 predictedPoint = new Vector3(transform.position.x, transform.position.y, transform.position.z) + playerRigidbody.velocity * Time.deltaTime;
+                predictedPoint.y -= yCorrection;
+
+                GameObject clone = PhotonNetwork.Instantiate(FootPrintName, predictedPoint,
                                                                transform.rotation,
                                                                 0) as GameObject;
                 droptime_Time = DropTime + Time.realtimeSinceStartup;
