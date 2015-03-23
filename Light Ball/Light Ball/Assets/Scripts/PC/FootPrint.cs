@@ -41,6 +41,7 @@ public class FootPrint : Photon.MonoBehaviour {
                 GameObject clone = PhotonNetwork.Instantiate(FootPrintName, predictedPoint,
                                                                transform.rotation,
                                                                 0) as GameObject;
+
                 droptime_Time = DropTime + Time.realtimeSinceStartup;
             }
         }

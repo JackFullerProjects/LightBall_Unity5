@@ -9,19 +9,17 @@ public class DestroyObject : Photon.MonoBehaviour {
     {
         DestroyTime -= Time.deltaTime;
 
-        if (DestroyTime <= 0)
+        if (DestroyTime <= 0 && GetComponent<PhotonView>().isMine)
         {
-            if (GetComponent<PhotonView>().instantiationId == 0)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                if (PhotonNetwork.isMasterClient)
-                {
-                    PhotonNetwork.Destroy(gameObject);
-                }
-            }
+            this.photonView.RPC("Destroy", PhotonTargets.AllBuffered);
         }
+    }
+
+   [RPC]
+    public IEnumerator Destroy()
+    {
+        GameObject.Destroy(this.gameObject);
+        yield return 0; // if you allow 1 frame to pass, the object's OnDestroy() method gets called and cleans up references.
+        PhotonNetwork.UnAllocateViewID(this.photonView.viewID);
     }
 }

@@ -116,6 +116,7 @@ public class NetworkManager : MonoBehaviour {
 		lobbyCamera.enabled = false;
     }
 
+
     void OnGUI()
     {
         foreach (var teamName in PunTeams.PlayersPerTeam.Keys)
