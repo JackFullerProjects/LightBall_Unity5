@@ -23,7 +23,7 @@ public class PlayerShoot : MonoBehaviour {
 
         if (canFire)
         {
-            if (RPNM_Script.ControllerInUse)
+            if (RigidbodyFirstPersonController.UsingController)
             {
                 if (Input.GetAxis("R_Trigger_1") > 0 && !PlayerShooting)
                 {
