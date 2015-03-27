@@ -49,15 +49,15 @@ public class RigidbodyFirstPersonController : MonoBehaviour
 				CurrentTargetSpeed = ForwardSpeed;
 			}
 #if !MOBILE_INPUT
-            if (Input.GetKey(RunKey) || Input.GetButton("LS_1"))
-            {
-	            CurrentTargetSpeed *= RunMultiplier;
-	            m_Running = true;
-            }
-            else
-            {
-	            m_Running = false;
-            }
+            //if (Input.GetKey(RunKey) || Input.GetButton("LS_1"))
+            //{
+            //    CurrentTargetSpeed *= RunMultiplier;
+            //    m_Running = true;
+            //}
+            //else
+            //{
+            //    m_Running = false;
+            //}
 #endif
         }
 
