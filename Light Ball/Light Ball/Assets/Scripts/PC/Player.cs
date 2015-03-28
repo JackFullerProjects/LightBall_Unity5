@@ -57,6 +57,7 @@ public class Player : PlayerClass, IEditAble {
 
         SetTeamLoadout(team);
         LevelManager.RespawnPlayer(gameObject);
+        UpdateAmmoHUD();
 
     }
 
@@ -188,6 +189,8 @@ public class Player : PlayerClass, IEditAble {
                     hitPoint = hit.point;
                     GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
                     clone.GetComponentInChildren<ParticleSystem>().startColor = Color.white;
+                    destructionModuleClass.Ammo --;
+                    UpdateAmmoHUD();
 
                     var hitPlayerPhotonView = hit.collider.gameObject.GetComponent<PhotonView>();
 
@@ -262,6 +265,11 @@ public class Player : PlayerClass, IEditAble {
         isReloading = true;
     }
 
+    public void UpdateAmmoHUD()
+    {
+        GameObject.Find("NetworkManager").GetComponent<NetworkManager>().DestructableAmmo.text = "" + destructionModuleClass.Ammo;
+    }
+
 
 
 
@@ -291,13 +299,14 @@ public class Player : PlayerClass, IEditAble {
     #region Interfaces
     public void DestructionModify(int ammo, float cooldown, float accuracy, int range, int armourdamage, int healthdamage)
     {
-        destructionModuleClass.Ammo = ammo;
+        destructionModuleClass.Ammo += ammo;
         destructionModuleClass.ModuleCooldown = cooldown;
         destructionModuleClass.Accuracy = accuracy;
         destructionModuleClass.Range = range;
         destructionModuleClass.ArmourDamage = armourdamage;
         destructionModuleClass.HealthDamage = healthdamage;
         GetComponent<PlayerShoot>().destructionCooldown = cooldown;
+        UpdateAmmoHUD();
     }
 
     public void ImpairmentModify()

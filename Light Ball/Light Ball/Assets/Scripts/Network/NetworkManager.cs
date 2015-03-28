@@ -19,6 +19,7 @@ public class NetworkManager : MonoBehaviour {
     [SerializeField] GameObject PleaseWait;
     public Text Armour;
     public Text Health;
+    public Text DestructableAmmo;
 
 
     [SerializeField] GameObject playerHUD;

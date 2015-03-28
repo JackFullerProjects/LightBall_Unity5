@@ -14,6 +14,7 @@ public class PlayerShoot : MonoBehaviour {
     public float ImpairmentCooldown;
     private float storeShootCooldown;
     private bool canFire = true;
+    Player player;
 
     void Start()
     {
@@ -22,6 +23,7 @@ public class PlayerShoot : MonoBehaviour {
 
         ImpairmentCooldown = GetComponent<Player>().impairmentModuleClass.ModuleCooldown;
         destructionCooldown = GetComponent<Player>().destructionModuleClass.ModuleCooldown;
+        player = GetComponent<Player>();
     }
 	
 	// Update is called once per frame
@@ -33,16 +35,25 @@ public class PlayerShoot : MonoBehaviour {
             {
                 if (Input.GetAxis("R_Trigger_1") > 0 && !PlayerShooting)
                 {
-                    if (!GetComponent<Player>().GunAnimation.GetComponent<Animation>().isPlaying)
+                    if (!player.GunAnimation.GetComponent<Animation>().isPlaying)
                     {
-                        canFire = false;
-                        var player = GetComponent<Player>();
-                        player.Fire();
-                        PlayerShooting = true;
-                        if (GetComponent<Player>().ballIndex == 0)
-                            StartCoroutine(FireCooldown(destructionCooldown));
+                        if (player.ballIndex == 0)
+                        {
+                            if (player.destructionModuleClass.Ammo > 0)
+                            {
+                                canFire = false;
+                                player.Fire();
+                                PlayerShooting = true;
+                                StartCoroutine(FireCooldown(destructionCooldown));
+                            }
+                        }
                         else
+                        {
+                            canFire = false;
+                            player.Fire();
+                            PlayerShooting = true;
                             StartCoroutine(FireCooldown(ImpairmentCooldown));
+                        }
                     }
                 }
             }
@@ -50,16 +61,25 @@ public class PlayerShoot : MonoBehaviour {
             {
                 if (Input.GetMouseButton(0) && canFire)
                 {
-                    if (!GetComponent<Player>().GunAnimation.GetComponent<Animation>().isPlaying)
+                    if (!player.GunAnimation.GetComponent<Animation>().isPlaying)
                     {
-                        canFire = false;
-                        var player = GetComponent<Player>();
-                        player.Fire();
-
-                        if(GetComponent<Player>().ballIndex == 0)
-                             StartCoroutine(FireCooldown(destructionCooldown));
+                        if (player.ballIndex == 0)
+                        {
+                            if (player.destructionModuleClass.Ammo > 0)
+                            {
+                                canFire = false;
+                                player.Fire();
+                                PlayerShooting = true;
+                                StartCoroutine(FireCooldown(destructionCooldown));
+                            }
+                        }
                         else
+                        {
+                            canFire = false;
+                            player.Fire();
+                            PlayerShooting = true;
                             StartCoroutine(FireCooldown(ImpairmentCooldown));
+                        }
                     }
                 }
             }

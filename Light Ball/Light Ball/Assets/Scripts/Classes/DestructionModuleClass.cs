@@ -17,7 +17,7 @@ public class DestructionModuleClass
         Range = _range;
         Accuracy = _accuracy;
         ModuleCooldown = _cooldown;
-        Ammo = _ammo;
+        Ammo += _ammo;
         ArmourDamage = _armourDamage;
         HealthDamage = _healthDamage;
         ForceFieldDamage = _forceFieldDamage;
