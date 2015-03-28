@@ -19,7 +19,4 @@ public class PlayerClass : Photon.MonoBehaviour {
         }
     }
 
-   
-
-
-}
+  }

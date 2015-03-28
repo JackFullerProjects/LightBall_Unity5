@@ -3,8 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class Player : PlayerClass {
+public class Player : PlayerClass, IEditAble {
 
+
+    //classes 
+    public DestructionModuleClass destructionModuleClass;
+    public ImpairmentModuleClass impairmentModuleClass;
     //Header("Controller Bool")]
     private bool useController;
 	PlayerData playerData = new PlayerData(100, 100, 100, 0);
@@ -39,9 +43,6 @@ public class Player : PlayerClass {
     public ParticleSystem gunParticle;
     public AnimationClip[] GunAnimationsArray;
     private bool isReloading;
-    public int HealthDamage;
-    public int ArmourDamage;
-    public int ForceFieldDamage;
     public LayerMask layerMask;
 
     public PunTeams.Team team;
@@ -76,14 +77,12 @@ public class Player : PlayerClass {
             gameObject.layer = 12;
             gunMaterials.Add(objectPool.GunMaterials[0]);
             gunMaterials.Add(objectPool.GunMaterials[1]);
-            GetComponent<FootPrint>().FootPrintName = "RedFootprint";
         }
         else if (_playerTeam == PunTeams.Team.blue)
         {
             gameObject.layer = 13;
             gunMaterials.Add(objectPool.GunMaterials[0]);
             gunMaterials.Add(objectPool.GunMaterials[2]);
-            GetComponent<FootPrint>().FootPrintName = "BlueFootprint";
         }
     }
 
@@ -136,13 +135,11 @@ public class Player : PlayerClass {
         }
     }
 
-    public void Reset()
+    private void Reset()
     {
-  
+        playerData.health = 100;
+        playerData.armour = 100;
     }
-
-
-
 
     #region Light Ball Systems
 
@@ -174,6 +171,10 @@ public class Player : PlayerClass {
 
         //raycast from middle of camera to get where cursor is aiming
         Transform cam = Camera.main.transform;
+        Vector3 raycastDirection = cam.forward;
+        raycastDirection.x += Random.Range(-destructionModuleClass.Accuracy, destructionModuleClass.Accuracy);
+        raycastDirection.y += Random.Range(-destructionModuleClass.Accuracy, destructionModuleClass.Accuracy);
+
         RaycastHit hit;
         Vector3 hitPoint;
 
@@ -182,7 +183,7 @@ public class Player : PlayerClass {
 
             case 0 :
                 
-                if (Physics.Raycast(cam.position, cam.forward, out hit, 20000, layerMask))
+                if (Physics.Raycast(cam.position, raycastDirection, out hit, destructionModuleClass.Range, layerMask))
                 {
                     hitPoint = hit.point;
 
@@ -196,14 +197,14 @@ public class Player : PlayerClass {
                         hitPlayerPhotonView = hit.collider.gameObject.transform.parent.GetComponent<PhotonView>();
 
                         if (hitPlayerPhotonView != null)
-                               hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, ForceFieldDamage);
+                            hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.ForceFieldDamage);
                     }
                     else if (hit.collider.gameObject.transform.parent.tag == "ForceFieldBlue" && team != PunTeams.Team.blue)
                     {
                         hitPlayerPhotonView = hit.collider.gameObject.transform.parent.GetComponent<PhotonView>();
 
                         if(hitPlayerPhotonView != null)
-                            hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, ForceFieldDamage);
+                            hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.ForceFieldDamage);
                     }
 
                     if (!hitPlayerPhotonView)
@@ -211,7 +212,7 @@ public class Player : PlayerClass {
 
                     if (hit.collider.gameObject.tag == "Player")
                     {
-                        hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, HealthDamage, ArmourDamage);
+                        hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.HealthDamage, destructionModuleClass.ArmourDamage);
                     }
                    
                 }
@@ -234,10 +235,6 @@ public class Player : PlayerClass {
                                                         transform.rotation,
                                                         0) as GameObject;
 
-                        //float _heightCorrection = clone.transform.localScale.y / 2;
-                        //Vector3 _boxPos = hitPoint;
-                        //_boxPos.y += _heightCorrection;
-                        //clone.transform.position = _boxPos;
                     }
                     else
                     {
@@ -248,11 +245,6 @@ public class Player : PlayerClass {
                         GameObject clone = PhotonNetwork.Instantiate("ForceFieldBlue", _boxPos,
                                                         transform.rotation,
                                                         0) as GameObject;
-
-                        //float _heightCorrection = clone.transform.localScale.y / 2;
-                        //Vector3 _boxPos = hitPoint;
-                        //_boxPos.y += _heightCorrection;
-                        //clone.transform.position = _boxPos;
                     }
                 }
 
@@ -287,6 +279,24 @@ public class Player : PlayerClass {
         }
     }
     #endregion
+
+    #region Interfaces
+    public void DestructionModify(int ammo, float cooldown, float accuracy, int range, int armourdamage, int healthdamage)
+    {
+        destructionModuleClass.Ammo = ammo;
+        destructionModuleClass.ModuleCooldown = cooldown;
+        destructionModuleClass.Accuracy = accuracy;
+        destructionModuleClass.Range = range;
+        destructionModuleClass.ArmourDamage = armourdamage;
+        destructionModuleClass.HealthDamage = healthdamage;
+        GetComponent<PlayerShoot>().destructionCooldown = cooldown;
+    }
+
+    public void ImpairmentModify()
+    {
+    }
+    #endregion
+
 
 
 

@@ -8,14 +8,20 @@ public class PlayerShoot : MonoBehaviour {
     private bool PlayerShooting = false;
 
     //shooting cooldown
-    public float shootCooldown;
+    [HideInInspector]
+    public float destructionCooldown;
+    [HideInInspector]
+    public float ImpairmentCooldown;
     private float storeShootCooldown;
     private bool canFire = true;
 
     void Start()
     {
-        storeShootCooldown = shootCooldown;
+        storeShootCooldown = destructionCooldown;
         RPNM_Script = gameObject.GetComponent<RigidbodyFirstPersonController>();
+
+        ImpairmentCooldown = GetComponent<Player>().impairmentModuleClass.ModuleCooldown;
+        destructionCooldown = GetComponent<Player>().destructionModuleClass.ModuleCooldown;
     }
 	
 	// Update is called once per frame
@@ -33,8 +39,10 @@ public class PlayerShoot : MonoBehaviour {
                         var player = GetComponent<Player>();
                         player.Fire();
                         PlayerShooting = true;
-                        //StartCoroutine(ShootingCooldown(0.2f));
-                        StartCoroutine(FireCooldown(shootCooldown));
+                        if (GetComponent<Player>().ballIndex == 0)
+                            StartCoroutine(FireCooldown(destructionCooldown));
+                        else
+                            StartCoroutine(FireCooldown(ImpairmentCooldown));
                     }
                 }
             }
@@ -47,7 +55,11 @@ public class PlayerShoot : MonoBehaviour {
                         canFire = false;
                         var player = GetComponent<Player>();
                         player.Fire();
-                        StartCoroutine(FireCooldown(shootCooldown));
+
+                        if(GetComponent<Player>().ballIndex == 0)
+                             StartCoroutine(FireCooldown(destructionCooldown));
+                        else
+                            StartCoroutine(FireCooldown(ImpairmentCooldown));
                     }
                 }
             }
