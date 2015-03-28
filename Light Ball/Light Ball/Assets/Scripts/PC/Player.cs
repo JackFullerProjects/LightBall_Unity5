@@ -186,27 +186,35 @@ public class Player : PlayerClass, IEditAble {
                 if (Physics.Raycast(cam.position, raycastDirection, out hit, destructionModuleClass.Range, layerMask))
                 {
                     hitPoint = hit.point;
-
                     GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
                     clone.GetComponentInChildren<ParticleSystem>().startColor = Color.white;
 
                     var hitPlayerPhotonView = hit.collider.gameObject.GetComponent<PhotonView>();
 
-                    if (hit.collider.gameObject.transform.parent.tag == "ForceFieldRed" && team != PunTeams.Team.red)
+                    if (hit.collider.gameObject.transform.parent != null)
                     {
-                        hitPlayerPhotonView = hit.collider.gameObject.transform.parent.GetComponent<PhotonView>();
+                        if (hit.collider.gameObject.transform.parent.tag == "ForceFieldRed")
+                        {
+                            if (team != PunTeams.Team.red)
+                            {
+                                hitPlayerPhotonView = hit.collider.gameObject.transform.parent.GetComponent<PhotonView>();
 
-                        if (hitPlayerPhotonView != null)
-                            hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.ForceFieldDamage);
+                                if (hitPlayerPhotonView != null)
+                                    hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.ForceFieldDamage);
+                            }
+                        }
+                        else if (hit.collider.gameObject.transform.parent.tag == "ForceFieldBlue")
+                        {
+                            if (team != PunTeams.Team.blue)
+                            {
+                                hitPlayerPhotonView = hit.collider.gameObject.transform.parent.GetComponent<PhotonView>();
+
+                                if (hitPlayerPhotonView != null)
+                                    hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.ForceFieldDamage);
+                            }
+                        }
                     }
-                    else if (hit.collider.gameObject.transform.parent.tag == "ForceFieldBlue" && team != PunTeams.Team.blue)
-                    {
-                        hitPlayerPhotonView = hit.collider.gameObject.transform.parent.GetComponent<PhotonView>();
-
-                        if(hitPlayerPhotonView != null)
-                            hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.ForceFieldDamage);
-                    }
-
+                    
                     if (!hitPlayerPhotonView)
                         return;
 
