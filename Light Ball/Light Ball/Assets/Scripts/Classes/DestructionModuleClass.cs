@@ -12,6 +12,10 @@ public class DestructionModuleClass
     public int ForceFieldDamage;
     public float ModuleCooldown;
 
+    public bool IsAOE;
+    public float AOESize;
+    public int AOEDamage;
+
     public DestructionModuleClass(int _range, float _accuracy, float _cooldown, int _armourDamage, int _healthDamage, int _ammo, int _forceFieldDamage)
     {
         Range = _range;

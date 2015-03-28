@@ -57,7 +57,8 @@ public class Player : PlayerClass, IEditAble {
 
         SetTeamLoadout(team);
         LevelManager.RespawnPlayer(gameObject);
-        UpdateAmmoHUD();
+
+        GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, false, destructionModuleClass.Ammo);
 
     }
 
@@ -153,6 +154,12 @@ public class Player : PlayerClass, IEditAble {
         //dont let ball index got out of the array bounds
         if (ballIndex > gunMaterials.Count - 1)
             ballIndex = 0;
+
+        if(ballIndex == 0)
+            GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, true, destructionModuleClass.Ammo);
+        else
+            GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, true, impairmentModuleClass.Ammo);
+
     }
 
     IEnumerator ChangeCooldown(float _wait)
@@ -190,7 +197,8 @@ public class Player : PlayerClass, IEditAble {
                     GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
                     clone.GetComponentInChildren<ParticleSystem>().startColor = Color.white;
                     destructionModuleClass.Ammo --;
-                    UpdateAmmoHUD();
+
+                    GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, false, destructionModuleClass.Ammo);
 
                     var hitPlayerPhotonView = hit.collider.gameObject.GetComponent<PhotonView>();
 
@@ -235,6 +243,9 @@ public class Player : PlayerClass, IEditAble {
                 if (Physics.Raycast(cam.position, cam.forward, out hit, 20000))
                 {
                     hitPoint = hit.point;
+                    impairmentModuleClass.Ammo--;
+
+                    GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, false, impairmentModuleClass.Ammo);
 
                     if (team == PunTeams.Team.red)
                     {
@@ -263,11 +274,6 @@ public class Player : PlayerClass, IEditAble {
         }
 
         isReloading = true;
-    }
-
-    public void UpdateAmmoHUD()
-    {
-        GameObject.Find("NetworkManager").GetComponent<NetworkManager>().DestructableAmmo.text = "" + destructionModuleClass.Ammo;
     }
 
 
@@ -306,7 +312,7 @@ public class Player : PlayerClass, IEditAble {
         destructionModuleClass.ArmourDamage = armourdamage;
         destructionModuleClass.HealthDamage = healthdamage;
         GetComponent<PlayerShoot>().destructionCooldown = cooldown;
-        UpdateAmmoHUD();
+        GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, false, destructionModuleClass.Ammo);
     }
 
     public void ImpairmentModify()

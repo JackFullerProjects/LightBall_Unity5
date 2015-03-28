@@ -20,6 +20,8 @@ public class NetworkManager : MonoBehaviour {
     public Text Armour;
     public Text Health;
     public Text DestructableAmmo;
+    public GameObject DestructableAmmoHUD;
+    public GameObject ImpairableAmmoHUD;
 
 
     [SerializeField] GameObject playerHUD;
@@ -119,6 +121,34 @@ public class NetworkManager : MonoBehaviour {
         playerHUD.SetActive(true);
 
 		lobbyCamera.enabled = false;
+    }
+
+    public void UpdateHUD(int _ballIndex, bool updateAmmo, bool updateCorrectHud, int ammo)
+    {
+        if (updateCorrectHud)
+        {
+            if (_ballIndex == 0)
+            {
+                DestructableAmmoHUD.SetActive(true);
+                ImpairableAmmoHUD.SetActive(false);
+            }
+            else
+            {
+                DestructableAmmoHUD.SetActive(false);
+                ImpairableAmmoHUD.SetActive(true);
+            }
+        }
+        if (updateAmmo)
+        {
+            if (DestructableAmmoHUD.activeInHierarchy)
+            {
+                DestructableAmmoHUD.GetComponent<Text>().text = "" + ammo;
+            }
+            if (ImpairableAmmoHUD.activeInHierarchy)
+            {
+                ImpairableAmmoHUD.GetComponent<Text>().text = "" + ammo;
+            }
+        }
     }
 
 
