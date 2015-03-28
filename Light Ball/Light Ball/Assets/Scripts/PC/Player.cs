@@ -303,7 +303,7 @@ public class Player : PlayerClass, IEditAble {
     #endregion
 
     #region Interfaces
-    public void DestructionModify(int ammo, float cooldown, float accuracy, int range, int armourdamage, int healthdamage)
+    public void DestructionModify(int ammo, float cooldown, float accuracy, int range, int armourdamage, int healthdamage, int forcefieldDamage)
     {
         destructionModuleClass.Ammo += ammo;
         destructionModuleClass.ModuleCooldown = cooldown;
@@ -311,6 +311,7 @@ public class Player : PlayerClass, IEditAble {
         destructionModuleClass.Range = range;
         destructionModuleClass.ArmourDamage = armourdamage;
         destructionModuleClass.HealthDamage = healthdamage;
+        destructionModuleClass.ForceFieldDamage = forcefieldDamage;
         GetComponent<PlayerShoot>().destructionCooldown = cooldown;
         GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, false, destructionModuleClass.Ammo);
     }
