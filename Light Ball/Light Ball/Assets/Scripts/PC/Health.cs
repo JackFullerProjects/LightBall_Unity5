@@ -23,8 +23,9 @@ public class Health : Photon.MonoBehaviour {
             if (GetComponent<PhotonView>().isMine)
             {
                //update GUI
+                LevelManager.RespawnPlayer(gameObject);
             }
-            LevelManager.RespawnPlayer(gameObject);
+            
         }
         
     }

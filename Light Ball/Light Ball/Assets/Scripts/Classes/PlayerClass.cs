@@ -10,6 +10,7 @@ public class PlayerClass : Photon.MonoBehaviour {
         public int ammo;
         public int selectedBall;
 
+
         public PlayerData(int _health, int _armour, int _ammo, int _selectedBall)
         {
             health = _health;

@@ -32,6 +32,7 @@ public class LevelManager : Photon.MonoBehaviour {
     {
         Player player = _PlayerToRespawn.GetComponent<Player>();
         PhotonView gamemanager = GameObject.Find("GameManager").GetComponent<PhotonView>();
+        _PlayerToRespawn.GetComponent<PhotonView>().RPC("IncreaseDeaths", PhotonTargets.All);
 
         if (player.team == PunTeams.Team.red)
         {
@@ -56,7 +57,6 @@ public class LevelManager : Photon.MonoBehaviour {
     public static void FirstRespawn(GameObject _PlayerToRespawn)
     {
         Player player = _PlayerToRespawn.GetComponent<Player>();
-        PhotonView gamemanager = GameObject.Find("GameManager").GetComponent<PhotonView>();
 
         if (player.team == PunTeams.Team.red)
         {

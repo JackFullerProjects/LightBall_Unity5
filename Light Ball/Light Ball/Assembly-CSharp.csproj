@@ -109,6 +109,7 @@
      <Compile Include="Assets\Scripts\Classes\DestructionModuleClass.cs" />
      <Compile Include="Assets\Scripts\Classes\ImpairmentModuleClass.cs" />
      <Compile Include="Assets\Scripts\Classes\PlayerClass.cs" />
+     <Compile Include="Assets\Scripts\Classes\PlayerPerformanceClass.cs" />
      <Compile Include="Assets\Scripts\Classes\PlayerState.cs" />
      <Compile Include="Assets\Scripts\Effects\DestroyObject.cs" />
      <Compile Include="Assets\Scripts\Effects\DestroyParticle.cs" />
@@ -138,6 +139,7 @@
      <Compile Include="Assets\Scripts\PC\Health.cs" />
      <Compile Include="Assets\Scripts\PC\MouseLook.cs" />
      <Compile Include="Assets\Scripts\PC\Player.cs" />
+     <Compile Include="Assets\Scripts\PC\PlayerRoundStats.cs" />
      <Compile Include="Assets\Scripts\PC\PlayerShoot.cs" />
      <Compile Include="Assets\Scripts\PC\PlayerVisibility.cs" />
      <Compile Include="Assets\Scripts\PC\RigidbodyFirstPersonController.cs" />

@@ -30,7 +30,7 @@ public class GUIManager : Photon.MonoBehaviour {
         GUI.contentColor = Color.green;
         string minutes = Mathf.Floor(GameManager.Timer / 60).ToString("00");
         string seconds = (GameManager.Timer % 60).ToString("00");
-        GUI.Box(new Rect(590, 50, 600, 50), "Red Score: " + GameManager.RedScore + " / 50" + "   Blue Score: " + GameManager.BlueScore + "/ 50" + "    Time: " + minutes + ":" + seconds);
+        GUI.Box(new Rect(690, 50, 600, 50), "Red Score: " + GameManager.RedScore + " / 50" + "   Blue Score: " + GameManager.BlueScore + "/ 50" + "    Time: " + minutes + ":" + seconds);
 
         GUI.contentColor = Color.yellow;
         GUI.Box(new Rect(790,1000, 400, 50), "Health: " + playerScript.playerData.health + "     Des Ammo: " + playerScript.destructionModuleClass.Ammo + "    Impair Ammo: " + playerScript.impairmentModuleClass.Ammo);

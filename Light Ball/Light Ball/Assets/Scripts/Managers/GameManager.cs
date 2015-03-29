@@ -16,7 +16,7 @@ public class GameManager : Photon.MonoBehaviour {
     {
         if (PhotonNetwork.isMasterClient)
         {
-            GetComponent<PhotonView>().RPC("IncreaseTimer", PhotonTargets.All, Timer);
+            GetComponent<PhotonView>().RPC("IncreaseTimer", PhotonTargets.AllBuffered, Timer);
         }
 	}
 
