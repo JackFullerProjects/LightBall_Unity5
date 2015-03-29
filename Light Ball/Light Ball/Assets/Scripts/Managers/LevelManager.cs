@@ -31,7 +31,33 @@ public class LevelManager : Photon.MonoBehaviour {
     public static void RespawnPlayer(GameObject _PlayerToRespawn)
     {
         Player player = _PlayerToRespawn.GetComponent<Player>();
-       
+        PhotonView gamemanager = GameObject.Find("GameManager").GetComponent<PhotonView>();
+
+        if (player.team == PunTeams.Team.red)
+        {
+            int spawnIndex = ChooseSpawn(0, redSpawns.Length - 1);
+            _PlayerToRespawn.transform.position = redSpawns[spawnIndex].transform.position;
+            _PlayerToRespawn.transform.rotation = redSpawns[spawnIndex].transform.rotation;
+            gamemanager.RPC("IncreaseScore", PhotonTargets.All, 2);
+        }
+        else if (player.team == PunTeams.Team.blue)
+        {
+            int spawnIndex = ChooseSpawn(0, blueSpawns.Length - 1);
+            _PlayerToRespawn.transform.position = blueSpawns[spawnIndex].transform.position;
+            _PlayerToRespawn.transform.rotation = redSpawns[spawnIndex].transform.rotation;
+            gamemanager.RPC("IncreaseScore", PhotonTargets.All, 1);
+        }
+        else
+        {
+            Debug.Log("SPAWN ERROR: No Team Assigned");
+        }
+    }
+
+    public static void FirstRespawn(GameObject _PlayerToRespawn)
+    {
+        Player player = _PlayerToRespawn.GetComponent<Player>();
+        PhotonView gamemanager = GameObject.Find("GameManager").GetComponent<PhotonView>();
+
         if (player.team == PunTeams.Team.red)
         {
             int spawnIndex = ChooseSpawn(0, redSpawns.Length - 1);
@@ -49,7 +75,6 @@ public class LevelManager : Photon.MonoBehaviour {
             Debug.Log("SPAWN ERROR: No Team Assigned");
         }
     }
-
     public static int ChooseSpawn(int min, int max)
     {
         return Random.Range(min, max);

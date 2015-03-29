@@ -7,30 +7,22 @@ public class Health : Photon.MonoBehaviour {
     public int Armour = 100;
 
     [RPC]
-    public void TakeDamage(int _healthDamage, int _armourDamage)
+    public void TakeDamage(int _healthDamage)
     {
-        if (Armour > 0)
-        {
-            Armour -= _armourDamage;
-            if(GetComponent<PhotonView>().isMine)
-                GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Armour.text = "" + Armour;
-            return;
-        }
-
         HP -= _healthDamage;
 
         if (GetComponent<PhotonView>().isMine)
-            GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Health.text = "" + HP;
+        {
+            //Update GUI
+        }
 
         if (HP <= 0)
         {
-            Armour = 100;
             HP = 100;
 
             if (GetComponent<PhotonView>().isMine)
             {
-                GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Armour.text = "" + Armour;
-                GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Health.text = "" + HP;
+               //update GUI
             }
             LevelManager.RespawnPlayer(gameObject);
         }
@@ -38,6 +30,11 @@ public class Health : Photon.MonoBehaviour {
     }
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+
+    }
+
+    void OnGUI()
     {
 
     }

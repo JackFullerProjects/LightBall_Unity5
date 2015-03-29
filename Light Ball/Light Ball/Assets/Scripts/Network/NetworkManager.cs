@@ -14,17 +14,10 @@ public class NetworkManager : MonoBehaviour {
 	[SerializeField] InputField username;
 	[SerializeField] InputField roomName;
 	[SerializeField] InputField roomList;
-    [SerializeField] Text PlayerCount;
     [SerializeField] GameObject JoinGame;
     [SerializeField] GameObject PleaseWait;
-    public Text Armour;
-    public Text Health;
-    public Text DestructableAmmo;
-    public GameObject DestructableAmmoHUD;
-    public GameObject ImpairableAmmoHUD;
 
-
-    [SerializeField] GameObject playerHUD;
+    [SerializeField] GameObject gameManager;
 
 
 	public string VERSION = "v0.0.1";
@@ -48,7 +41,7 @@ public class NetworkManager : MonoBehaviour {
 
     void Update()
     {
-        PlayerCount.text = "Players In Room: " + PhotonNetwork.playerList.Length;
+    
     }
 
 	public void JoinRoom()
@@ -118,37 +111,7 @@ public class NetworkManager : MonoBehaviour {
 		                                   			 transform.rotation,
 		                                             0);
 
-        playerHUD.SetActive(true);
-
 		lobbyCamera.enabled = false;
-    }
-
-    public void UpdateHUD(int _ballIndex, bool updateAmmo, bool updateCorrectHud, int ammo)
-    {
-        if (updateCorrectHud)
-        {
-            if (_ballIndex == 0)
-            {
-                DestructableAmmoHUD.SetActive(true);
-                ImpairableAmmoHUD.SetActive(false);
-            }
-            else
-            {
-                DestructableAmmoHUD.SetActive(false);
-                ImpairableAmmoHUD.SetActive(true);
-            }
-        }
-        if (updateAmmo)
-        {
-            if (DestructableAmmoHUD.activeInHierarchy)
-            {
-                DestructableAmmoHUD.GetComponent<Text>().text = "" + ammo;
-            }
-            if (ImpairableAmmoHUD.activeInHierarchy)
-            {
-                ImpairableAmmoHUD.GetComponent<Text>().text = "" + ammo;
-            }
-        }
     }
 
 

@@ -16,7 +16,6 @@ public class DestructionModifyer : Photon.MonoBehaviour {
 
     [Header("Damage Variables")]
     public int HealthDamage;
-    public int ArmourDamage;
     public int ForceFieldDamage;
 
 
@@ -28,6 +27,6 @@ public class DestructionModifyer : Photon.MonoBehaviour {
         if (EditDestructionModule == null)
             return;
 
-        EditDestructionModule.DestructionModify(Ammo, Cooldown, Accuracy, Range, ArmourDamage, HealthDamage, ForceFieldDamage);
+        EditDestructionModule.DestructionModify(Ammo, Cooldown, Accuracy, Range, HealthDamage, ForceFieldDamage);
     }
 }

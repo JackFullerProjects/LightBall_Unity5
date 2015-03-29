@@ -11,7 +11,7 @@ public class Player : PlayerClass, IEditAble {
     public ImpairmentModuleClass impairmentModuleClass;
     //Header("Controller Bool")]
     private bool useController;
-	PlayerData playerData = new PlayerData(100, 100, 100, 0);
+	public PlayerData playerData = new PlayerData(100, 100, 100, 0);
     [Header("Controller States Hold Input Device")]
     public ControllerState controllerstate;
 
@@ -56,9 +56,8 @@ public class Player : PlayerClass, IEditAble {
             useController = true;
 
         SetTeamLoadout(team);
-        LevelManager.RespawnPlayer(gameObject);
+        LevelManager.FirstRespawn(gameObject);
 
-        GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, false, destructionModuleClass.Ammo);
 
     }
 
@@ -155,11 +154,6 @@ public class Player : PlayerClass, IEditAble {
         if (ballIndex > gunMaterials.Count - 1)
             ballIndex = 0;
 
-        if(ballIndex == 0)
-            GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, true, destructionModuleClass.Ammo);
-        else
-            GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, true, impairmentModuleClass.Ammo);
-
     }
 
     IEnumerator ChangeCooldown(float _wait)
@@ -198,8 +192,6 @@ public class Player : PlayerClass, IEditAble {
                     clone.GetComponentInChildren<ParticleSystem>().startColor = Color.white;
                     destructionModuleClass.Ammo --;
 
-                    GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, false, destructionModuleClass.Ammo);
-
                     var hitPlayerPhotonView = hit.collider.gameObject.GetComponent<PhotonView>();
 
                     if (hit.collider.gameObject.transform.parent != null)
@@ -231,7 +223,7 @@ public class Player : PlayerClass, IEditAble {
 
                     if (hit.collider.gameObject.tag == "Player")
                     {
-                        hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.HealthDamage, destructionModuleClass.ArmourDamage);
+                        hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.HealthDamage);
                     }
                    
                 }
@@ -244,8 +236,6 @@ public class Player : PlayerClass, IEditAble {
                 {
                     hitPoint = hit.point;
                     impairmentModuleClass.Ammo--;
-
-                    GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, false, impairmentModuleClass.Ammo);
 
                     if (team == PunTeams.Team.red)
                     {
@@ -282,17 +272,10 @@ public class Player : PlayerClass, IEditAble {
     #endregion 
 
     #region Health and Armour
-    public void DoDamage(int _healthDam, int _armourDam)
+    public void DoDamage(int _healthDam)
     {
-        if (playerData.armour > 0)
-        {
-            playerData.armour -= _armourDam;
-            GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Armour.text = "" + playerData.armour;
-            return;
-        }
 
         playerData.health -= _healthDam;
-        GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Health.text = "" + playerData.health;
 
         if (playerData.health <= 0)
         {
@@ -303,17 +286,15 @@ public class Player : PlayerClass, IEditAble {
     #endregion
 
     #region Interfaces
-    public void DestructionModify(int ammo, float cooldown, float accuracy, int range, int armourdamage, int healthdamage, int forcefieldDamage)
+    public void DestructionModify(int ammo, float cooldown, float accuracy, int range, int healthdamage, int forcefieldDamage)
     {
         destructionModuleClass.Ammo += ammo;
         destructionModuleClass.ModuleCooldown = cooldown;
         destructionModuleClass.Accuracy = accuracy;
         destructionModuleClass.Range = range;
-        destructionModuleClass.ArmourDamage = armourdamage;
         destructionModuleClass.HealthDamage = healthdamage;
         destructionModuleClass.ForceFieldDamage = forcefieldDamage;
         GetComponent<PlayerShoot>().destructionCooldown = cooldown;
-        GameObject.Find("NetworkManager").GetComponent<NetworkManager>().UpdateHUD(ballIndex, true, false, destructionModuleClass.Ammo);
     }
 
     public void ImpairmentModify()

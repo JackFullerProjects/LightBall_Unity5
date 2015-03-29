@@ -118,6 +118,8 @@
      <Compile Include="Assets\Scripts\InGame\ForceFieldHealth.cs" />
      <Compile Include="Assets\Scripts\InGame\PlayersInForceField.cs" />
      <Compile Include="Assets\Scripts\Interfaces\Interfaces.cs" />
+     <Compile Include="Assets\Scripts\Managers\GUIManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
      <Compile Include="Assets\Scripts\Managers\LevelManager.cs" />
      <Compile Include="Assets\Scripts\Managers\ObjectBank.cs" />
      <Compile Include="Assets\Scripts\Network\BulletNetworkMover.cs" />

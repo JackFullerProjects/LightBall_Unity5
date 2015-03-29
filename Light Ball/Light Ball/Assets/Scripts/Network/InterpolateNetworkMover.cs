@@ -47,6 +47,7 @@ public class InterpolateNetworkMover : Photon.MonoBehaviour {
             GetComponent<PlayerShoot>().enabled = true;
             GetComponent<Rigidbody>().useGravity = true;
             GetComponent<Player>().GunAnimation.GetComponent<Animation>().enabled = true;
+            GetComponent<GUIManager>().enabled = true;
 
             foreach (Transform child in transform)
             {
