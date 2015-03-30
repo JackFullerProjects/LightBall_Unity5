@@ -33,7 +33,8 @@ public class GUIManager : Photon.MonoBehaviour {
         GUI.Box(new Rect(690, 50, 600, 50), "Red Score: " + GameManager.RedScore + " / 50" + "   Blue Score: " + GameManager.BlueScore + "/ 50" + "    Time: " + minutes + ":" + seconds);
 
         GUI.contentColor = Color.yellow;
-        GUI.Box(new Rect(790,1000, 400, 50), "Health: " + playerScript.playerData.health + "     Des Ammo: " + playerScript.destructionModuleClass.Ammo + "    Impair Ammo: " + playerScript.impairmentModuleClass.Ammo);
+        GUI.Box(new Rect(790,1000, 400, 50), "Health: " + playerScript.playerData.health);
+        GUI.Box(new Rect(1800, 900, 150, 50), "Ammo: " + playerScript.destructionModuleClass.ShotsInClip + " / " + playerScript.destructionModuleClass.Ammo);
     }
 }
 

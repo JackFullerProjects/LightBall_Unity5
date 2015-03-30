@@ -7,7 +7,7 @@ public class Health : Photon.MonoBehaviour {
     public int Armour = 100;
 
     [RPC]
-    public void TakeDamage(int _healthDamage)
+    public void TakeDamage(int _healthDamage, [SerializeField]GameObject _sender)
     {
         HP -= _healthDamage;
 
@@ -23,6 +23,8 @@ public class Health : Photon.MonoBehaviour {
             if (GetComponent<PhotonView>().isMine)
             {
                //update GUI
+                _sender.GetComponent<PhotonView>().RPC("IncreaseKills", PhotonTargets.All);
+                GetComponent<PhotonView>().RPC("IncreaseDeaths", PhotonTargets.All);
                 LevelManager.RespawnPlayer(gameObject);
             }
             

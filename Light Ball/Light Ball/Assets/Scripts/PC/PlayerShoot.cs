@@ -39,12 +39,18 @@ public class PlayerShoot : MonoBehaviour {
                     {
                         if (player.ballIndex == 0)
                         {
-                            if (player.destructionModuleClass.Ammo > 0)
+                            if (player.destructionModuleClass.ShotsInClip > 0)
                             {
+                                player.destructionModuleClass.ShotsInClip -= 1;
                                 canFire = false;
                                 player.Fire();
                                 PlayerShooting = true;
                                 StartCoroutine(FireCooldown(destructionCooldown));
+                            }
+                            else
+                            {
+                                if(player.destructionModuleClass.Ammo > 0)
+                                     player.destructionModuleClass.Reload();
                             }
                         }
                         else
@@ -65,12 +71,18 @@ public class PlayerShoot : MonoBehaviour {
                     {
                         if (player.ballIndex == 0)
                         {
-                            if (player.destructionModuleClass.Ammo > 0)
+                            if (player.destructionModuleClass.ShotsInClip > 0)
                             {
+                                player.destructionModuleClass.ShotsInClip -= 1;
                                 canFire = false;
                                 player.Fire();
                                 PlayerShooting = true;
                                 StartCoroutine(FireCooldown(destructionCooldown));
+                            }
+                            else
+                            {
+                                if (player.destructionModuleClass.Ammo > 0)
+                                    player.destructionModuleClass.Reload();
                             }
                         }
                         else

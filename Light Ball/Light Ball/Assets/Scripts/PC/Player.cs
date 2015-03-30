@@ -190,7 +190,6 @@ public class Player : PlayerClass, IEditAble {
                     hitPoint = hit.point;
                     GameObject clone = PhotonNetwork.Instantiate("HitParticle", hitPoint, transform.rotation, 0) as GameObject;
                     clone.GetComponentInChildren<ParticleSystem>().startColor = Color.white;
-                    destructionModuleClass.Ammo --;
 
                     var hitPlayerPhotonView = hit.collider.gameObject.GetComponent<PhotonView>();
 
@@ -223,7 +222,7 @@ public class Player : PlayerClass, IEditAble {
 
                     if (hit.collider.gameObject.tag == "Player")
                     {
-                        hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.HealthDamage);
+                        hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.HealthDamage, gameObject);
                     }
                    
                 }
@@ -235,7 +234,6 @@ public class Player : PlayerClass, IEditAble {
                 if (Physics.Raycast(cam.position, cam.forward, out hit, 20000))
                 {
                     hitPoint = hit.point;
-                    impairmentModuleClass.Ammo--;
 
                     if (team == PunTeams.Team.red)
                     {
@@ -286,8 +284,11 @@ public class Player : PlayerClass, IEditAble {
     #endregion
 
     #region Interfaces
-    public void DestructionModify(int ammo, float cooldown, float accuracy, int range, int healthdamage, int forcefieldDamage)
+    public void DestructionModify(int ammo, int clipSize, int MaxAmmo, float reloadTime, float cooldown, float accuracy, int range, int healthdamage, int forcefieldDamage)
     {
+        destructionModuleClass.MaxAmmo = MaxAmmo;
+        destructionModuleClass.ClipSize = clipSize;
+        destructionModuleClass.ReloadTime = reloadTime;
         destructionModuleClass.Ammo += ammo;
         destructionModuleClass.ModuleCooldown = cooldown;
         destructionModuleClass.Accuracy = accuracy;

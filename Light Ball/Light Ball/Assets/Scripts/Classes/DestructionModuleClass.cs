@@ -4,9 +4,31 @@ using System.Collections;
 [System.Serializable]
 public class DestructionModuleClass
 {
+    [HideInInspector]
+    public int ShotsInClip;
+    public Mesh Model;
+    public Animation[] GunAnimations;
     public int Range;
     public float Accuracy;
-    public int Ammo;
+    private int ammo;
+
+    public int Ammo
+    {
+        get
+        {
+            if (ammo > MaxAmmo)
+                ammo = MaxAmmo;
+            return ammo;
+        }
+        set
+        {
+             ammo = value;
+        }
+    }
+  
+    public int MaxAmmo;
+    public float ReloadTime;
+    public int ClipSize;
     public int HealthDamage;
     public int ForceFieldDamage;
     public float ModuleCooldown;
@@ -23,5 +45,34 @@ public class DestructionModuleClass
         Ammo += _ammo;
         HealthDamage = _healthDamage;
         ForceFieldDamage = _forceFieldDamage;
+    }
+
+    public void Reload()
+    {
+        if (Ammo > 0)//if we have ammo
+        {
+           // Debug.Log("ALL AMMO: " + Ammo);
+            if (ShotsInClip < ClipSize)// if we have used a shot in the clip
+            {
+                int ammoToReload = ClipSize - ShotsInClip; // calculate amount of ammo to reload
+                // Debug.Log("AMMO NEEDED TO RELOAD: " + ammoToReload);
+                int checkAmmoWeHave = Ammo - ammoToReload;
+                //Debug.Log("AMMO WE HAVE AFTER RELOAD " + checkAmmoWeHave);
+                if (checkAmmoWeHave > 0)
+                {
+                    //RELOAD
+                    Ammo -= ammoToReload;
+                    ShotsInClip = ammoToReload;
+                }
+                else
+                {
+                    //if we didnt have enough the calculate the number we are short then reload whats left
+                    ammoToReload = ClipSize - Mathf.Abs(checkAmmoWeHave);
+                    Ammo -= ammoToReload;
+                    ShotsInClip += ammoToReload;
+
+                }
+            }
+        }
     }
 }
