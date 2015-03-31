@@ -222,7 +222,7 @@ public class Player : PlayerClass, IEditAble {
 
                     if (hit.collider.gameObject.tag == "Player")
                     {
-                        hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.HealthDamage, gameObject);
+                        hitPlayerPhotonView.RPC("TakeDamage", PhotonTargets.All, destructionModuleClass.HealthDamage);
                     }
                    
                 }
@@ -264,7 +264,7 @@ public class Player : PlayerClass, IEditAble {
         isReloading = true;
     }
 
-
+#endregion
 
 
     #region Interfaces
