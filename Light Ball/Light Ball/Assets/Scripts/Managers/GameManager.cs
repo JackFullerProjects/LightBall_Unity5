@@ -9,6 +9,10 @@ public class GameManager : Photon.MonoBehaviour {
 
     private bool RedWins;
     private bool BlueWins;
+
+    private float cooldown = 0.5f;
+    private float cooldownTime;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -19,6 +23,12 @@ public class GameManager : Photon.MonoBehaviour {
     {
         if (PhotonNetwork.isMasterClient)
         {
+            if (cooldownTime < Time.realtimeSinceStartup)
+            {
+                GetComponent<PhotonView>().RPC("SyncScore", PhotonTargets.AllBuffered, GameManager.BlueScore, GameManager.RedScore);
+                cooldownTime = Time.realtimeSinceStartup + cooldown;
+            }
+
             if(Timer > 0)
                 GetComponent<PhotonView>().RPC("IncreaseTimer", PhotonTargets.AllBuffered, Timer);
 
@@ -68,11 +78,20 @@ public class GameManager : Photon.MonoBehaviour {
     }
 
     [RPC]
+    public void SyncScore(int _blueScore, int _redScore)
+    {
+        GameManager.BlueScore = _blueScore;
+        GameManager.RedScore = _redScore;
+    }
+
+    [RPC]
     public void IncreaseTimer(float gameTime)
     {
         gameTime -= Time.deltaTime;
         Timer = gameTime;
     }
+
+   
 
     void OnGUI()
     {

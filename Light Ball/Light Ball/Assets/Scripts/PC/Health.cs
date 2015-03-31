@@ -27,9 +27,7 @@ public class Health : Photon.MonoBehaviour {
                 GetComponent<PhotonView>().RPC("IncreaseDeaths", PhotonTargets.All);
                 LevelManager.RespawnPlayer(gameObject);
             }
-            
         }
-        
     }
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

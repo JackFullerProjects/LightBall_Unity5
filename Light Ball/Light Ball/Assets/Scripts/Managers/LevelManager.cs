@@ -39,14 +39,14 @@ public class LevelManager : Photon.MonoBehaviour {
             int spawnIndex = ChooseSpawn(0, redSpawns.Length - 1);
             _PlayerToRespawn.transform.position = redSpawns[spawnIndex].transform.position;
             _PlayerToRespawn.transform.rotation = redSpawns[spawnIndex].transform.rotation;
-            gamemanager.RPC("IncreaseScore", PhotonTargets.All, 2);
+            gamemanager.RPC("IncreaseScore", PhotonTargets.MasterClient, 2);
         }
         else if (player.team == PunTeams.Team.blue)
         {
             int spawnIndex = ChooseSpawn(0, blueSpawns.Length - 1);
             _PlayerToRespawn.transform.position = blueSpawns[spawnIndex].transform.position;
             _PlayerToRespawn.transform.rotation = redSpawns[spawnIndex].transform.rotation;
-            gamemanager.RPC("IncreaseScore", PhotonTargets.All, 1);
+            gamemanager.RPC("IncreaseScore", PhotonTargets.MasterClient, 1);
         }
         else
         {
