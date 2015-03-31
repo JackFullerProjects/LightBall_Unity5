@@ -267,22 +267,6 @@ public class Player : PlayerClass, IEditAble {
 
 
 
-    #endregion 
-
-    #region Health and Armour
-    public void DoDamage(int _healthDam)
-    {
-
-        playerData.health -= _healthDam;
-
-        if (playerData.health <= 0)
-        {
-            Reset();
-            LevelManager.RespawnPlayer(gameObject);
-        }
-    }
-    #endregion
-
     #region Interfaces
     public void DestructionModify(int ammo, int clipSize, int MaxAmmo, float reloadTime, float cooldown, float accuracy, int range, int healthdamage, int forcefieldDamage)
     {

@@ -4,20 +4,19 @@ using System.Collections;
 [System.Serializable]
 public class DestructionModuleClass
 {
-    [HideInInspector]
-    public int ShotsInClip;
+    #region Class Variables
     public Mesh Model;
     public Animation[] GunAnimations;
     public int Range;
     public float Accuracy;
     private int ammo;
-
     public int Ammo
     {
         get
         {
             if (ammo > MaxAmmo)
                 ammo = MaxAmmo;
+
             return ammo;
         }
         set
@@ -25,7 +24,9 @@ public class DestructionModuleClass
              ammo = value;
         }
     }
-  
+
+    [HideInInspector]
+    public int ShotsInClip;
     public int MaxAmmo;
     public float ReloadTime;
     public int ClipSize;
@@ -36,7 +37,9 @@ public class DestructionModuleClass
     public bool IsAOE;
     public float AOESize;
     public int AOEDamage;
+    #endregion
 
+    #region Class Constructors
     public DestructionModuleClass(int _range, float _accuracy, float _cooldown, int _healthDamage, int _ammo, int _forceFieldDamage)
     {
         Range = _range;
@@ -46,7 +49,9 @@ public class DestructionModuleClass
         HealthDamage = _healthDamage;
         ForceFieldDamage = _forceFieldDamage;
     }
+    #endregion
 
+    #region Class Methods e.g Reload/Play Animation
     public void Reload()
     {
         if (Ammo > 0)//if we have ammo
@@ -75,4 +80,14 @@ public class DestructionModuleClass
             }
         }
     }
+
+    public void PlayFireAnimation()
+    {
+    }
+
+    public void PlayReloadAnimation()
+    {
+
+    }
+    #endregion
 }
